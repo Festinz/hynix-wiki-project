@@ -2,6 +2,7 @@
   "crons": [
     { "path": "/api/cron/fetch-news", "schedule": "0 0 * * *" },
     { "path": "/api/cron/fetch-news", "schedule": "0 9 * * *" },
-    { "path": "/api/cron/fetch-trends", "schedule": "0 0 * * 1,4" }
+    { "path": "/api/cron/fetch-trends", "schedule": "0 0 * * 1,4" },
+    { "path": "/api/cron/wiki-updates", "schedule": "0 21 * * *" }
   ]
 }

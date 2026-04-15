@@ -60,6 +60,26 @@ const sections = [
     ),
     stats: ["MOSFET 변천사", "High-K Metal Gate", "AI 면접 코치"],
   },
+  {
+    title: "LLM Wiki",
+    subtitle: "Karpathy 패턴",
+    description: "파편화된 지식을 하나의 체계로",
+    href: "/wiki",
+    color: "#06B6D4",
+    gradient: "from-cyan-900/80 to-slate-950/90",
+    borderColor: "border-cyan-500/30",
+    hoverBorder: "hover:border-cyan-400/60",
+    glowColor: "hover:shadow-cyan-500/20",
+    icon: (
+      <svg viewBox="0 0 64 64" className="w-12 h-12" fill="none">
+        <circle cx="20" cy="20" r="6" stroke="currentColor" strokeWidth="2" />
+        <circle cx="44" cy="18" r="6" stroke="currentColor" strokeWidth="2" />
+        <circle cx="32" cy="44" r="6" stroke="currentColor" strokeWidth="2" />
+        <path d="M25 22l14-2M23 25l7 14M41 23l-6 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+    stats: ["지식 그래프", "Perplexity 자동 업데이트", "11개 소스 → 100+ 연결된 지식 노드"],
+  },
 ];
 
 const containerVariants = {
@@ -100,7 +120,7 @@ export default function Home() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl w-full"
+        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl w-full"
       >
         {sections.map((section) => (
           <motion.div key={section.href} variants={cardVariants}>
