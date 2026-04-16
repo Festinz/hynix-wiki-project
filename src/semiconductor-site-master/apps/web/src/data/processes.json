@@ -59,7 +59,7 @@
         "description": "조각가가 대리석에서 불필요한 부분을 깎아내 작품을 만들듯, 식각은 웨이퍼에서 불필요한 부분을 제거해 회로 패턴을 완성합니다.",
         "everyday": "쿠키 반죽에서 쿠키 틀로 모양을 찍어내는 것처럼, 포토로 그린 패턴대로 불필요한 막을 제거"
       },
-      "description": "포토 공정에서 정의된 패턴을 따라 불필요한 박막을 선택적으로 제거하는 공정. 습식(Wet)과 건식(Dry) 방식이 있으며, 현대 반도체는 건식 식각이 주류입니다.",
+      "description": "포토 공정에서 정의된 패턴을 따라 불필요한 박막을 선택적으로 제거하는 공정. 습식(Wet), 건식(Dry), 그리고 현대 미세공정의 핵심인 RIE를 같은 축에서 봐야 profile과 선택비 감각이 생깁니다.",
       "types": [
         {
           "name": "Wet Etch (습식 식각)",
@@ -77,14 +77,14 @@
         },
         {
           "name": "RIE (Reactive Ion Etching)",
-          "description": "반응성 이온을 이용한 건식 식각의 대표적 방법. 플라즈마에서 생성된 반응성 이온이 전기장에 의해 수직 방향으로 가속되어 웨이퍼 표면에 충돌하면서 화학반응과 물리적 스퍼터링을 동시에 수행한다.",
-          "pros": "화학반응 + 물리적 충돌 결합 → 높은 선택비와 방향성 동시 확보",
+          "description": "반응성 이온을 이용한 건식 식각의 대표적 방법. 고진공 플라즈마에서 생성된 이온이 외부 전기장에 의해 수직 방향으로 가속되어 표면을 때리고, 그 밑에서 약해진 표면을 라디칼이 화학적으로 반응해 제거한다.",
+          "pros": "화학반응 + 물리적 충돌 결합 -> 높은 선택비와 방향성 동시 확보",
           "cons": "플라즈마 데미지(Charging damage), 마이크로 로딩 효과",
           "useCase": "대부분의 미세 패턴 식각",
           "mechanism": {
-            "chemical": "반응 가스(F, Cl 라디칼)가 표면과 화학반응 → 선택적 제거 (선택비 확보)",
-            "physical": "이온이 수직 방향으로 가속·충돌 → 방향성(Anisotropy) 확보",
-            "synergy": "화학반응이 표면을 약화시키고, 물리적 충돌이 반응 생성물을 제거 → 수직 프로파일"
+            "chemical": "반응 가스(F, Cl 라디칼)가 표면과 화학반응해 선택적으로 제거한다.",
+            "physical": "이온이 전기장으로 수직 가속되어 충돌하면서 방향성(Anisotropy)을 만든다.",
+            "synergy": "화학반응이 표면을 약화시키고, 물리적 충돌이 생성물을 털어내 수직 프로파일을 만든다."
           },
           "variants": [
             { "name": "MERIE (Magnetically Enhanced RIE)", "description": "자기장으로 플라즈마 밀도 향상" },
@@ -306,8 +306,8 @@
     },
     {
       "id": "cmp",
-      "name": "화학적 기계적 연마",
-      "nameEn": "Chemical Mechanical Polishing (CMP)",
+      "name": "CMP & Cleaning",
+      "nameEn": "Chemical Mechanical Polishing & Cleaning (C&C)",
       "slug": "cmp",
       "order": 5,
       "analogy": {
@@ -315,7 +315,7 @@
         "description": "네일 파일로 울퉁불퉁한 표면을 갈고, 버퍼로 광을 내듯, 화학약품(슬러리)으로 녹이면서 물리적으로 깎아 웨이퍼를 거울처럼 평탄하게 만듭니다.",
         "everyday": "울퉁불퉁한 도로를 아스팔트로 다시 포장하는 것처럼, 여러 층을 쌓은 웨이퍼 표면을 평탄화"
       },
-      "description": "화학적 반응(슬러리)과 기계적 연마(패드)를 동시에 적용하여 웨이퍼 표면을 원자 수준으로 평탄화하는 공정. 다층 배선 구조에서 각 층 사이의 평탄화에 필수적입니다.",
+      "description": "화학적 반응(슬러리)과 기계적 연마(패드)를 동시에 적용해 웨이퍼 표면을 평탄화하고, 뒤이어 cleaning으로 slurry와 particle을 제거하는 공정 묶음. 다층 배선 구조에서는 CMP만큼이나 cleaning까지가 중요합니다.",
       "mechanism": {
         "chemical": "슬러리(Slurry)의 화학성분이 표면을 연화/용해",
         "mechanical": "연마 패드가 물리적으로 표면을 깎아냄",
@@ -347,8 +347,8 @@
         }
       ],
       "postCMP": {
-        "name": "Post-CMP 세정",
-        "description": "연마 후 잔류 슬러리 입자 및 오염물 제거",
+        "name": "Cleaning",
+        "description": "연마 후 잔류 슬러리 입자, particle, 오염물 제거",
         "method": "DI Water (초순수) + 브러시 세정 + 메가소닉"
       },
       "keyParameters": [
@@ -359,6 +359,7 @@
         { "name": "균일도 (WIWNU)", "description": "Within Wafer Non-Uniformity", "unit": "%" }
       ],
       "interviewPoints": [
+        "★ 5대 공정의 마지막은 CMP 단독이 아니라 C&C라고 보는 편이 더 정확함",
         "★ CMP에서 '화학적'과 '기계적'이 각각 어떤 역할인지 분리해서 설명",
         "★ 왜 평탄화가 필요한지 — 다층 배선에서 높이 차이 → 포토 공정 DoF 초과 → 패턴 불량",
         "★ 디싱(Dishing)과 에로젼(Erosion) 현상 설명 — Cu CMP에서 특히 중요",

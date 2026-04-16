@@ -1,33 +1,33 @@
 ---
-title: "Target-Poisoning"
+title: "Target Poisoning"
 type: concept
 created: 2026-04-15
 updated: 2026-04-15
+aliases: ["Target Poisoning"]
 sources: ["raw/core/Reactive Sputtering  발표자료.pptx"]
 confidence: high
-tags: ["reactive-sputtering", "plasma", "process-control"]
+tags: ["concept", "sputtering", "plasma"]
 ---
+> reactive sputtering에서 가장 다루기 어려운 순간은 막이 잘 붙는 순간이 아니라 타깃까지 반응해 버리는 순간이다.
 
 ## What
-- Target-Poisoning은 reactive sputtering에서 target 표면이 금속 상태가 아니라 화합물층으로 덮이는 현상이다.
+- reactive gas가 많아져 타깃 표면이 산화물·질화물 같은 화합물층으로 덮이는 현상이다.
 
 ## How
-- O2나 N2 유량이 늘어나면 타깃 표면에서도 산화물/질화물이 형성되고 sputter yield가 급격히 바뀐다.
-- 이 전환점 부근에서 증착 속도, 조성, 플라즈마 임피던스가 비선형으로 움직여 공정이 매우 민감해진다.
+- 타깃이 compound mode로 전환되면 sputter yield, 전압, deposition rate, 막 조성이 비선형적으로 변한다.
+- 발표자료의 맥락으로 보면 reactive gas를 충분히 줘야 TiN 조성은 잘 맞지만, 동시에 타깃 표면까지 질화되면 증착 속도와 안정성이 함께 무너질 수 있다.
 
 ## Why
-- 원하는 조성의 TiN, TaN, 산화막을 얻으려면 reactive gas가 필요하지만, 과도하면 target이 compound mode로 넘어가 생산성이 급락한다.
-- 결국 reactive sputtering의 핵심은 "반응은 충분히 일으키되 poisoning은 제어하는 것"이다.
+- 원하는 화합물막 형성에는 reactive gas가 필요하지만, 과도하면 생산성과 안정성이 급격히 나빠진다.
 
 ## Measure
-- deposition rate, chamber pressure, 전압/전류, 광방출(OES), sheet resistance 변화를 함께 본다.
-- 발표자료의 실험 데이터처럼 gas flow sweep과 hysteresis 관찰이 대표적이다.
+- deposition rate, sheet resistance, hysteresis, optical emission, chamber parameter drift를 본다.
+- N2 flow가 증가할수록 두께가 감소하는 실험 경향은 poisoning/산란/유효 Ti 플럭스 감소를 함께 의심하게 만드는 간접 지표가 된다.
 
 ## Connections
-- [[Reactive-Sputtering]]
-- [[Argon]]
-- [[Thin-Film-Deposition]]
-- [[Reactive-Sputtering-Source]]
+- [[Reactive Sputtering]]
+- [[아르곤]]
+- [[박막 증착]]
 
 ## Open Questions
-- 현재 자료 기준으로는 closed-loop 제어에서 어떤 센서 조합이 poisoning 안정화에 가장 유효한지 더 조사할 필요가 있다.
+- closed-loop gas control 전략을 후속 보강할 수 있다.

@@ -2,32 +2,39 @@
 title: "LDD"
 type: entity
 created: 2026-04-15
-updated: 2026-04-15
-sources: ["raw/core/HKMG.docx", "raw/metrology-yield/교안 2권.pdf"]
+updated: 2026-04-16
+aliases: ["LDD"]
+sources: ["raw/core/HKMG.docx", "raw/core/반도체 정리.pdf"]
 confidence: medium
-tags: ["device", "implant", "hot-carrier"]
+tags: ["entity", "implant", "reliability"]
 ---
+> LDD는 저항을 조금 희생하더라도 drain 전계 피크를 낮추기 위해 선택된 구조적 절충안이다.
 
 ## What
-- LDD는 Lightly Doped Drain의 약자로, 채널과 고농도 source/drain 사이에 완만한 도핑 구간을 두는 구조다.
+- Lightly Doped Drain의 약자로, 채널과 고농도 source/drain 사이에 저농도 구간을 두는 구조다.
 
 ## How
-- drain 전계 피크를 완화해 hot carrier와 short-channel effect를 줄이도록 설계한다.
-- 보통 spacer 형성 전후 두 번의 [[Ion-Implantation]]으로 profile을 만든다.
+- spacer 전후 이온주입을 이용해 완만한 도핑 gradient를 만든다.
+- 구조적으로는 drain 바로 옆의 전계 peak를 blunt하게 만들어, channel 끝단이 한 번에 과도한 전계를 맞지 않게 한다.
+- 따라서 LDD는 단순 도핑량 변경이 아니라, spacer integration과 self-aligned implant 순서가 핵심인 구조적 공정이다.
 
 ## Why
-- 미세화가 진행되면 drain 쪽 전계 집중으로 [[Leakage-Current]]와 hot carrier degradation이 커진다.
-- LDD는 신뢰성 개선에 유리하지만 series resistance 증가라는 비용을 낸다.
+- drain 쪽 전계 집중을 줄여 HCI와 short-channel 문제를 완화하기 위해 도입되었다.
+- series resistance를 조금 희생하더라도 hot carrier damage를 줄이는 편이 전체 신뢰성에는 유리한 경우가 많다.
+- 즉 LDD는 on-current 극대화보다 전계 분산과 장기 신뢰성을 택한 구조적 절충안이다.
+- 특히 drain edge 전계가 너무 세면 [[GIDL]]과 [[Hot Carrier Injection]]이 같이 악화될 수 있어, LDD는 누설과 신뢰성 문제를 동시에 누그러뜨리는 장치로 읽을 수 있다.
 
 ## Measure
-- Id-Vg, Id-Vd, hot carrier stress, [[DIBL]] 변화를 통해 효과를 평가한다.
-- 단면 분석과 SIMS profile로 실제 junction gradient를 검증한다.
+- hot carrier reliability, series resistance, DIBL, drive current 변화를 함께 본다.
+- 전계 피크가 줄면 누설과 장기 신뢰성은 좋아질 수 있지만, on-current 희생과의 균형도 같이 봐야 한다.
 
 ## Connections
-- [[Halo-Doping]]
-- [[Ion-Implantation]]
-- [[Device Characterization]]
-- [[Threshold-Voltage]]
+- [[Halo Doping]]
+- [[확산과 이온주입]]
+- [[Hot Carrier Injection]]
+- [[누설전류]]
+- [[GIDL]]
+- [[문턱전압]]
 
 ## Open Questions
-- HKMG 이후 work-function tuning과 LDD 최적화가 어떤 상호작용을 보이는지 정리할 필요가 있다.
+- 고성능 로직과 메모리 셀에서 LDD 최적화 기준 차이를 더 비교할 수 있다.

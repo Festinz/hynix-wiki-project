@@ -1,4 +1,3 @@
-// Perplexity Pro API 래퍼
 const PERPLEXITY_API = "https://api.perplexity.ai/chat/completions";
 
 export interface PerplexityResponse {
@@ -6,10 +5,56 @@ export interface PerplexityResponse {
   citations?: string[];
 }
 
-export async function searchWithPerplexity(
-  query: string,
-  model: "sonar" | "sonar-pro" = "sonar",
-  options?: { recency?: "day" | "week" | "month"; systemPrompt?: string }
+export interface NewsSummary {
+  title: string;
+  summary: string;
+  category: string;
+  importance: string;
+  company: string;
+  date: string;
+  sourceUrl: string | null;
+  sourceName: string;
+  region: string;
+  metricsUpdates?: {
+    product: string;
+    company: string;
+    field: string;
+    value: string;
+  }[];
+}
+
+export interface TrendBrief {
+  title: string;
+  summary: string;
+  whyImportant: string;
+  howToStudy: string;
+  interviewTip?: string;
+  relatedTopics: string[];
+  difficulty: string;
+  sources: string[];
+}
+
+function parseJsonResponse<T>(text: string): T {
+  const cleaned = text.replace(/```json|```/g, "").trim();
+
+  try {
+    return JSON.parse(cleaned) as T;
+  } catch {
+    const objectMatch = cleaned.match(/\{[\s\S]*\}/);
+    const arrayMatch = cleaned.match(/\[[\s\S]*\]/);
+    const candidate = objectMatch?.[0] || arrayMatch?.[0];
+
+    if (!candidate) {
+      throw new Error(`Failed to parse JSON: ${cleaned.slice(0, 200)}`);
+    }
+
+    return JSON.parse(candidate) as T;
+  }
+}
+
+async function callPerplexity(
+  messages: { role: "system" | "user"; content: string }[],
+  options?: { model?: "sonar" | "sonar-pro"; recency?: "day" | "week" | "month" }
 ): Promise<PerplexityResponse> {
   const res = await fetch(PERPLEXITY_API, {
     method: "POST",
@@ -18,16 +63,8 @@ export async function searchWithPerplexity(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: model === "sonar-pro" ? "sonar-pro" : "sonar",
-      messages: [
-        {
-          role: "system",
-          content:
-            options?.systemPrompt ||
-            "반도체 기술 전문 리서처. 최신 논문/뉴스 기반. 출처 URL 필수 포함. 각 항목을 번호 매겨서 나열.",
-        },
-        { role: "user", content: query },
-      ],
+      model: options?.model || "sonar",
+      messages,
       return_citations: true,
       search_recency_filter: options?.recency || "week",
     }),
@@ -40,61 +77,230 @@ export async function searchWithPerplexity(
   return res.json();
 }
 
-// ── 뉴스 검색 (매일) ──────────────────────────────────
-
-// 한국 뉴스 — 모든 언론사 대상
-export async function fetchSemiNews(company: "samsung" | "hynix") {
-  const companyName = company === "samsung" ? "삼성전자" : "SK하이닉스";
-  const keywords = company === "samsung"
-    ? "HBM DDR GDDR 파운드리 GAA EUV 3nm 2nm"
-    : "HBM DDR GDDR LPDDR NAND MR-MUF 극저온식각";
-  const query = `${companyName} 반도체 최신 뉴스 ${keywords} 2026.
-다양한 언론사에서 검색해줘: 연합뉴스, 조선일보, 중앙일보, 동아일보, 한국경제, 매일경제, 전자신문, 디지털타임스, ZDNet Korea, The Elec, 테크월드, 뉴시스, 아시아경제, IT조선 등.
-각 뉴스를 제목과 3줄 요약으로 나눠서 번호 매겨 최소 5개 이상 나열해줘. 출처 URL 필수.`;
-  return searchWithPerplexity(query, "sonar");
-}
-
-// 해외 뉴스 — 글로벌 반도체 업계 동향
-export async function fetchGlobalNews() {
-  return searchWithPerplexity(
-    `Latest semiconductor industry news 2026: Samsung, SK Hynix, TSMC, Intel, Micron, NVIDIA, AMD.
-Topics: HBM, DDR5, GDDR7, advanced packaging, GAA, EUV High-NA, foundry, AI chips, DRAM, NAND.
-Search across: Reuters, Bloomberg, TechCrunch, AnandTech, Tom's Hardware, SemiAnalysis, The Register, EE Times, Semiconductor Engineering, DigiTimes, SEMI, Nikkei Asia, WCCFTech.
-List at least 5 news items numbered, each with title and 3-line summary. Include source URLs.`,
-    "sonar",
-    { systemPrompt: "Semiconductor industry research analyst. Provide factual news with source URLs. Number each item." }
+export async function searchWithPerplexity(
+  query: string,
+  model: "sonar" | "sonar-pro" = "sonar",
+  options?: { recency?: "day" | "week" | "month"; systemPrompt?: string }
+): Promise<PerplexityResponse> {
+  return callPerplexity(
+    [
+      {
+        role: "system",
+        content:
+          options?.systemPrompt ||
+          "You are a semiconductor research assistant. Provide factual, source-backed results and include citations when available.",
+      },
+      { role: "user", content: query },
+    ],
+    { model, recency: options?.recency }
   );
 }
 
-// ── 논문/리서치 검색 (주 2회, 트렌드와 함께) ──────────
+function responseText(response: PerplexityResponse): string {
+  const content = response?.choices?.[0]?.message?.content?.trim();
 
-// 최신 논문 검색 — arxiv, IEEE, Nature 등
-export async function fetchLatestPapers(topic: string) {
-  return searchWithPerplexity(
-    `Find the most recent academic papers and research publications about: semiconductor ${topic} 2025 2026.
-Search specifically on: arxiv.org, ieee.org, nature.com, science.org, acs.org, springer.com, iedm.org.
-For each paper provide:
-- Paper title (original)
-- Authors (first author + et al.)
-- Publication venue (journal/conference name)
-- Key findings in 2-3 sentences
-- Direct URL to the paper
-List at least 3-5 papers, numbered.`,
-    "sonar-pro",
+  if (!content) {
+    throw new Error("Perplexity response did not contain any message content.");
+  }
+
+  return content;
+}
+
+export async function summarizeNewsWithPerplexity(
+  article: string,
+  citations: string[] = [],
+  source?: string
+): Promise<NewsSummary> {
+  const isGlobal = source === "global";
+  const today = new Date().toISOString().split("T")[0];
+  const citationText =
+    citations.length > 0 ? `Candidate source URLs: ${citations.join(", ")}` : "Candidate source URLs: none";
+
+  const response = await callPerplexity(
+    [
+      {
+        role: "system",
+        content:
+          "You are a semiconductor news editor. Return exactly one JSON object, no markdown, no prose outside JSON.",
+      },
+      {
+        role: "user",
+        content: `Analyze the article fragment below and normalize it into JSON.
+
+Article fragment:
+${article}
+
+${citationText}
+
+Rules:
+- If the article is global/non-Korean, still return Korean title and Korean summary.
+- Keep the summary to exactly 3 Korean bullet-like sentences joined as one short paragraph.
+- Choose category from: hbm, foundry, memory, packaging, market, ai-chip, process, other.
+- Choose importance from: breaking, major, normal.
+- Choose company from: samsung, hynix, tsmc, intel, micron, nvidia, both, industry.
+- Use region "${isGlobal ? "global" : "kr"}".
+- Use sourceUrl null if unclear.
+- metricsUpdates can be an empty array.
+- Return today's date unless the article clearly states a more precise publication date.
+
+Return this exact shape:
+{
+  "title": "Korean title within 25 chars if possible",
+  "summary": "Three-sentence Korean summary",
+  "category": "hbm|foundry|memory|packaging|market|ai-chip|process|other",
+  "importance": "breaking|major|normal",
+  "company": "samsung|hynix|tsmc|intel|micron|nvidia|both|industry",
+  "date": "${today}",
+  "sourceUrl": "url-or-null",
+  "sourceName": "publisher name",
+  "region": "${isGlobal ? "global" : "kr"}",
+  "metricsUpdates": [
     {
-      recency: "month",
-      systemPrompt: "Academic research specialist in semiconductor technology. Only cite real published papers with verifiable URLs. Be precise about publication details."
+      "product": "HBM4|DDR5|GDDR7|LPDDR6|NAND",
+      "company": "samsung|hynix",
+      "field": "pinSpeed|bandwidth|capacity|powerEfficiency|actualAchieved",
+      "value": "string value"
+    }
+  ]
+}`,
+      },
+    ],
+    { model: "sonar-pro", recency: "week" }
+  );
+
+  return parseJsonResponse<NewsSummary>(responseText(response));
+}
+
+export async function generateTrendBriefWithPerplexity(trendData: string): Promise<TrendBrief> {
+  const response = await callPerplexity(
+    [
+      {
+        role: "system",
+        content:
+          "You are a semiconductor trend analyst. Return exactly one JSON object, no markdown.",
+      },
+      {
+        role: "user",
+        content: `Read the research and industry notes below, then synthesize a study brief in Korean.
+
+Source material:
+${trendData}
+
+Rules:
+- Keep the writing accurate but readable for a semiconductor learner.
+- relatedTopics must contain existing wiki-style slugs when possible.
+- sources must be a list of URLs only.
+
+Return this shape:
+{
+  "title": "short Korean title",
+  "summary": "3-sentence Korean summary",
+  "whyImportant": "Why this matters for semiconductor manufacturing and roadmap",
+  "howToStudy": "How to study this topic from fundamentals to applications",
+  "interviewTip": "Optional but concise Korean talking point",
+  "relatedTopics": ["slug-1", "slug-2"],
+  "difficulty": "beginner|intermediate|advanced",
+  "sources": ["https://..."]
+}`,
+      },
+    ],
+    { model: "sonar-pro", recency: "month" }
+  );
+
+  return parseJsonResponse<TrendBrief>(responseText(response));
+}
+
+export async function generatePaperBriefWithPerplexity(paperData: string): Promise<TrendBrief> {
+  const response = await callPerplexity(
+    [
+      {
+        role: "system",
+        content:
+          "You are a semiconductor research analyst. Return exactly one JSON object, no markdown.",
+      },
+      {
+        role: "user",
+        content: `Read the paper list below and synthesize a Korean research brief.
+
+Source material:
+${paperData}
+
+Rules:
+- Focus on what changed technically and why it matters in production.
+- relatedTopics must be wiki-style slugs when possible.
+- sources must be a list of direct paper or publication URLs.
+
+Return this shape:
+{
+  "title": "short Korean title",
+  "summary": "3-sentence Korean summary",
+  "whyImportant": "Why the papers matter for device/process/product direction",
+  "howToStudy": "How to connect these papers to core semiconductor concepts",
+  "interviewTip": "Optional but concise Korean talking point",
+  "relatedTopics": ["slug-1", "slug-2"],
+  "difficulty": "beginner|intermediate|advanced",
+  "sources": ["https://..."]
+}`,
+      },
+    ],
+    { model: "sonar-pro", recency: "month" }
+  );
+
+  return parseJsonResponse<TrendBrief>(responseText(response));
+}
+
+export async function fetchSemiNews(company: "samsung" | "hynix") {
+  const companyName = company === "samsung" ? "Samsung Electronics" : "SK hynix";
+  const keywords =
+    company === "samsung"
+      ? "HBM DDR GDDR foundry GAA EUV 3nm 2nm"
+      : "HBM DDR GDDR LPDDR NAND MR-MUF CXL packaging";
+
+  const query = `Find the latest 2026 semiconductor news about ${companyName}.
+Focus on ${keywords}.
+Search Korean business and tech media when available.
+List at least 5 items in numbered form, each with title, 2-3 sentence summary, and source URL.`;
+
+  return searchWithPerplexity(query, "sonar", {
+    systemPrompt:
+      "You are a semiconductor news researcher. Provide concise factual coverage with source URLs.",
+  });
+}
+
+export async function fetchGlobalNews() {
+  return searchWithPerplexity(
+    `Latest 2026 semiconductor industry news involving Samsung, SK hynix, TSMC, Intel, Micron, NVIDIA, and AMD.
+Topics: HBM, DDR5, GDDR7, advanced packaging, GAA, EUV High-NA, foundry, AI chips, DRAM, NAND.
+List at least 5 items in numbered form, each with title, 2-3 sentence summary, and source URL.`,
+    "sonar",
+    {
+      systemPrompt:
+        "You are a global semiconductor industry researcher. Provide factual updates with source URLs.",
     }
   );
 }
 
-// 트렌드 딥리서치 (주 2회)
+export async function fetchLatestPapers(topic: string) {
+  return searchWithPerplexity(
+    `Find the most recent academic papers and research publications about semiconductor ${topic} from 2025 to 2026.
+Search specifically on arxiv.org, ieee.org, nature.com, science.org, acs.org, springer.com, and iedm.org.
+For each paper provide title, authors, venue, 2-3 sentence key findings, and direct URL.
+List at least 3 to 5 papers in numbered form.`,
+    "sonar-pro",
+    {
+      recency: "month",
+      systemPrompt:
+        "You are an academic research specialist in semiconductor technology. Cite only real papers with verifiable URLs.",
+    }
+  );
+}
+
 export async function fetchTrends(topic: string) {
   return searchWithPerplexity(
-    `Semiconductor ${topic}: latest research breakthroughs, industry trends, and technology roadmap 2025-2026.
-Search across: academic papers (IEEE, arxiv, Nature), industry reports (SEMI, IMEC, Yole), tech media (SemiAnalysis, EE Times, Semiconductor Engineering, AnandTech).
-For each trend/finding provide: title, source, key details, and why it matters for mass production.
-List at least 3-5 items numbered with source URLs.`,
+    `Summarize the latest 2025-2026 developments for semiconductor ${topic}.
+Search across academic papers, industry reports, and technical media.
+For each item include title, source, key details, why it matters for manufacturing, and source URL.
+List at least 3 to 5 items in numbered form.`,
     "sonar-pro",
     { recency: "month" }
   );

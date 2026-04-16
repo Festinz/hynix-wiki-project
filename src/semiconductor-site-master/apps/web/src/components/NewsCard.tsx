@@ -44,34 +44,40 @@ export default function NewsCard({
   const card = (
     <motion.div
       whileHover={{ y: -2 }}
-      className="rounded-xl border border-gray-800 bg-gray-900/50 p-4 hover:border-gray-700 transition-colors cursor-pointer"
+      className="glass-panel cursor-pointer rounded-xl p-4 transition-colors hover:border-white/15"
     >
-      <div className="flex items-center gap-2 mb-2 flex-wrap">
+      <div className="mb-2 flex flex-wrap items-center gap-2">
         <span
-          className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${importanceStyles[importance]}`}
+          className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${importanceStyles[importance]}`}
         >
           {importance === "breaking" ? "속보" : importance === "major" ? "주요" : "일반"}
         </span>
-        <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-800 text-gray-400">
+        <span className="rounded-full bg-gray-800 px-2 py-0.5 text-[10px] text-gray-400">
           {categoryLabels[category] || category}
         </span>
         {region === "global" && (
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-400 border border-cyan-500/20 font-medium">
+          <span className="rounded-full border border-cyan-500/20 bg-cyan-500/15 px-2 py-0.5 text-[10px] font-medium text-cyan-400">
             해외
           </span>
         )}
-        <span className="text-[10px] text-gray-600 ml-auto flex items-center gap-1.5">
+        <span className="ml-auto flex items-center gap-1.5 text-[10px] text-gray-600">
           {sourceName && <span>{sourceName}</span>}
           {sourceName && date && <span>·</span>}
           {date && <span>{date}</span>}
         </span>
       </div>
-      <h3 className="text-sm font-semibold mb-1 line-clamp-2">{title}</h3>
-      <p className="text-xs text-gray-400 line-clamp-2">{summary}</p>
+
+      <h3 className="mb-1 line-clamp-2 text-sm font-semibold">{title}</h3>
+      <p className="line-clamp-3 text-xs text-gray-400">{summary}</p>
+
       {sourceUrl && (
         <div className="mt-2 flex items-center gap-1 text-[10px] text-gray-500">
-          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+            />
           </svg>
           원문 보기
         </div>

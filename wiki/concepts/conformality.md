@@ -3,31 +3,35 @@ title: "Conformality"
 type: concept
 created: 2026-04-15
 updated: 2026-04-15
+aliases: ["Conformality"]
 sources: ["raw/core/hynix 지식 쌓기 5대 공정.pdf", "raw/core/Reactive Sputtering  발표자료.pptx"]
 confidence: medium
-tags: ["deposition", "geometry", "coverage"]
+tags: ["concept", "deposition", "geometry"]
 ---
+> 3D 구조 시대의 증착에서는 막을 쌓는 것보다 끝까지 따라가게 만드는 것이 더 어렵다.
 
 ## What
-- Conformality는 단차가 있는 구조의 옆벽과 바닥까지 막이 얼마나 균일하게 따라 들어가는지를 뜻한다.
+- 단차 구조의 sidewall과 bottom까지 막이 얼마나 균일하게 형성되는지를 뜻한다.
+- top만 두꺼운지, sidewall이 비는지, bottom이 굶는지를 함께 보는 3D 증착 품질 개념이다.
 
 ## How
-- 증착 입자의 진행 방향, 표면 반응 속도, 전구체의 확산 거동이 sidewall과 bottom의 막 두께 비를 결정한다.
-- [[PVD-vs-CVD-vs-ALD]]에서 PVD는 line-of-sight 성격이 강해 conformality가 낮고, ALD는 표면 반응 기반이라 높은 conformality를 얻기 쉽다.
+- 입자 진행 방향, precursor 확산, 표면 반응 메커니즘이 conformality를 결정한다.
+- [source:Reactive Sputtering 발표자료.pptx]와 [[PVD Overhang]] 노트가 보여 주듯, line-of-sight가 강한 PVD는 입구가 먼저 막히기 쉽고, CVD/ALD는 확산과 표면 반응 덕분에 더 유리하다.
+- 따라서 동일 막질이라도 공정 방식 선택이 conformality를 좌우한다.
 
 ## Why
-- 3D 구조가 깊어질수록 상부만 두껍고 하부가 비는 막은 저항, 누설, 단선 문제를 만든다.
-- 그래서 미세화와 3D 적층이 진행될수록 "막을 넣을 수 있는가"보다 "깊은 구조 끝까지 균일하게 넣을 수 있는가"가 더 중요해졌다.
+- 깊은 구조에서 막이 위쪽만 두꺼우면 void, 저항 증가, reliability 문제가 생기기 때문이다.
+- 메모리 적층 구조와 HAR 패턴에서는 이 문제가 단순 외형 불량이 아니라 open, contact 저항 증가, fill failure로 번진다.
 
 ## Measure
-- 단면 SEM/TEM으로 top, sidewall, bottom 두께를 비교한다.
-- 공정 관점에서는 [[Step-Coverage]]와 함께 해석해야 실제 구조 충진 가능성을 판단할 수 있다.
+- 단면 SEM/TEM으로 top, sidewall, bottom thickness 비를 확인한다.
+- 흔히 bottom/top ratio, sidewall/top ratio로 수치화하고, 구조 깊이가 커질수록 그 값이 어떻게 무너지는지도 함께 본다.
 
 ## Connections
-- [[Thin-Film-Deposition]]
-- [[Step-Coverage]]
-- [[PVD-vs-CVD-vs-ALD]]
-- [[ALD-Window]]
+- [[박막 증착]]
+- [[Step Coverage]]
+- [[PVD vs CVD vs ALD]]
+- [[ALD Window]]
 
 ## Open Questions
-- ALD에서도 precursor purge 조건과 aspect ratio가 극단적으로 커질 때 conformality 한계가 어디서 시작되는지 더 정리할 필요가 있다.
+- high aspect ratio 구조에서 precursor starvation을 더 정리할 수 있다.

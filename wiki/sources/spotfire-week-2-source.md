@@ -1,32 +1,39 @@
 ---
-title: "Spotfire-Week-2-Source"
+title: "소스 요약 - Spotfire 2주차"
 type: source
 created: 2026-04-15
 updated: 2026-04-15
-sources: ["raw/spotfire/[KDC] Spotfire ?? ??? ????_2??_ ??? ?? Hot Issue.pdf"]
+aliases: ["소스 요약 - Spotfire 2주차"]
+sources: ["raw/spotfire/[KDC] Spotfire 활용 반도체 공정분석_2주차_ 반도체 산업 Hot Issue.pdf"]
 confidence: low
-tags: ["source", "phase3", "????"]
+tags: ["source", "phase3", "산업", "핫이슈", "저신뢰"]
 ---
-
-> EUV, ???, ???? ?? Hot Issue? ?? source.
+> 핫이슈의 주제 축은 분명하지만, 세부 내용은 원문 추출 품질 때문에 보수적으로 받아들여야 한다.
 
 ## What
-- EUV, ???, ??? ???? ?? ?? ??? ???? source?.
+- EUV, 패키징, 메모리 반도체를 산업 핫이슈의 세 축으로 제시한다.
+- 원문 일부만 살아 있어 세부 논리는 약하지만, 산업 컨텍스트의 큰 방향은 파악할 수 있다.
+- 추출된 문장 기준으로는 AI/HPC 수요 폭증, High-NA EUV, pellicle, EUV 포토레지스트, 공급망/국산화 이슈가 핵심 키워드로 잡힌다.
 
 ## How
-- [[Industry-Hot-Issues]], [[EUV]], [[HBM]], [[MR-MUF]], [[SK-Hynix-Memory-Positioning]]? ????.
+- 이 소스는 [[산업 핫이슈]], [[EUV]], [[HBM]], [[MR-MUF]], [[SK하이닉스 메모리 포지셔닝]]의 범주를 잡는 데 사용했다.
+- 세부 수치나 강한 주장 대신, 이미 다른 데이터와 뉴스에서 검증 가능한 방향성만 반영했다.
+- 특히 "빛의 전쟁의 종착역: High-NA EUV"라는 framing과 펠리클/PR/장비 공급망 키워드는 [[EUV]] 노드가 단순 노광 설명을 넘어 생태계 문제를 다루도록 보강하는 데 도움을 줬다.
 
 ## Why
-- ?? ??? ? ?? ???? ?? ??? ???? ????.
+- 사용자 위키의 목적은 공정 지식을 산업 현실과 분리하지 않는 것이므로, 산업 이슈 소스도 반드시 축으로 포함되어야 한다.
+- 다만 텍스트 품질이 낮을수록 low confidence를 명시하는 것이 위키의 신뢰도에 유리하다.
 
 ## Measure
-- low-confidence flag? ?? ?? ?? ???? ????.
+- 현 시점에서는 주제 분류와 연결 노드 생성에만 사용했고, 세부 숫자는 사용하지 않았다.
+- 후속 Perplexity 업데이트로 최신 이슈를 덧입히면 이 소스의 약점을 보완할 수 있다.
 
 ## Connections
-- [[Industry-Hot-Issues]]
-- [[HBM]]
+- [[산업 핫이슈]]
 - [[EUV]]
+- [[HBM]]
+- [[MR-MUF]]
+- [[SK하이닉스 메모리 포지셔닝]]
 
 ## Open Questions
-- ??? ??? ????? ?? Perplexity ????? ??? ??.
-
+- 패키징 섹션 원문을 다시 수집해 HBM과 advanced packaging 연결을 더 구체화할 필요가 있다.

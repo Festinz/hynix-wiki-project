@@ -1,31 +1,36 @@
 ---
-title: "Metrology-Volume-3-Source"
+title: "소스 요약 - 교안 3권"
 type: source
 created: 2026-04-15
 updated: 2026-04-15
-sources: ["raw/metrology-yield/?? 3?.pdf"]
+aliases: ["소스 요약 - 교안 3권"]
+sources: ["raw/metrology-yield/교안 3권.pdf"]
 confidence: low
-tags: ["source", "phase2", "??"]
+tags: ["source", "phase2", "수율", "저신뢰"]
 ---
-
-> ?? ?? ?? source?? ?? ??? ?? ??? ??.
+> 이 소스는 방향은 맞지만, 현재 추출 품질만으로는 세부 내용을 강하게 단정하기 어렵다.
 
 ## What
-- contact/etch/recipe ?? ???? ??? ?? ?? source?.
+- 수율, 분석, 데이터 해석 흐름을 다루는 소스로 판단된다.
+- 다만 추출 텍스트가 매우 제한적이라 세부 주장보다는 큰 방향만 반영했다.
 
 ## How
-- [[Yield-Analysis]]? [[Process-to-Yield-Pipeline]]? low-confidence ???? ????.
+- 이 소스는 [[수율 분석]]과 [[공정→계측→소자→수율 파이프라인]]의 구조를 보강하는 참고 신호로 사용했다.
+- 직접 인용보다는 이미 확보된 5대 공정·Spotfire·계측 자료와의 교차 확인을 통해 반영했다.
 
 ## Why
-- ?? ?? ???? ?? ?? ?? ?? ??? ?? ??? ????.
+- 불완전한 소스라도 전체 파이프라인에서 빠진 축이 무엇인지 알려주는 단서가 될 수 있다.
+- 다만 low confidence 플래그를 유지해야 위키 전체의 신뢰도가 오히려 올라간다.
 
 ## Measure
-- low-confidence flag? ??? ?? ?? ???? ???.
+- 현재는 수율 관련 구조와 용어 수준만 반영했고, 세부 숫자나 사례는 채택하지 않았다.
+- 후속으로 PDF 원문을 수기 확인하거나 더 나은 OCR을 적용해야 한다.
 
 ## Connections
-- [[Yield Analysis]]
-- [[Data-Driven-Fab]]
+- [[수율 분석]]
+- [[공정→계측→소자→수율 파이프라인]]
+- [[계측]]
+- [[위키 로그]]
 
 ## Open Questions
-- OCR ???? ?? source? ????.
-
+- 교안 3권 원문을 다시 읽어 defective loss와 parametric loss의 구체 사례를 추가할 필요가 있다.

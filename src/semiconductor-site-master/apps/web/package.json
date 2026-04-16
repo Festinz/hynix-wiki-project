@@ -12,7 +12,6 @@
     "wiki:lint": "node scripts/lint-wiki.mjs"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.21.0",
     "@react-three/drei": "^9.88.0",
     "@react-three/fiber": "^8.15.0",
     "@vercel/blob": "^2.3.2",

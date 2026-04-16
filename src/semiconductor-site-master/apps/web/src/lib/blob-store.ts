@@ -1,4 +1,4 @@
-import { put, list } from "@vercel/blob";
+import { get, list, put } from "@vercel/blob";
 
 const NEWS_KEY = "data/news.json";
 const TRENDS_KEY = "data/trends.json";
@@ -8,9 +8,9 @@ export async function readBlobJson<T>(key: string, fallback: T): Promise<T> {
   try {
     const { blobs } = await list({ prefix: key, limit: 1 });
     if (blobs.length === 0) return fallback;
-    const res = await fetch(blobs[0].url);
-    if (!res.ok) return fallback;
-    return (await res.json()) as T;
+    const res = await get(blobs[0].pathname, { access: "private" });
+    if (!res || res.statusCode !== 200 || !res.stream) return fallback;
+    return (await new Response(res.stream).json()) as T;
   } catch {
     return fallback;
   }
@@ -18,11 +18,12 @@ export async function readBlobJson<T>(key: string, fallback: T): Promise<T> {
 
 export async function writeBlobJson(key: string, data: unknown): Promise<string> {
   const blob = await put(key, JSON.stringify(data, null, 2), {
-    access: "public",
+    access: "private",
     contentType: "application/json",
     addRandomSuffix: false,
+    allowOverwrite: true,
   });
-  return blob.url;
+  return blob.pathname;
 }
 
 export async function readNews(): Promise<any[]> {

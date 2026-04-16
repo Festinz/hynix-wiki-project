@@ -3,8 +3,13 @@ import path from "path";
 import matter from "gray-matter";
 
 export const projectRoot = path.resolve(process.cwd(), "../../../..");
-export const wikiDir = path.join(projectRoot, "wiki");
 export const outputPath = path.join(process.cwd(), "src", "data", "wiki.generated.json");
+export const wikiDirCandidates = [
+  path.join(process.cwd(), "wiki"),
+  path.join(projectRoot, "wiki"),
+];
+export const wikiDir =
+  wikiDirCandidates.find((candidate) => fs.existsSync(candidate)) ?? null;
 
 function walkMarkdownFiles(dir) {
   const files = [];
@@ -62,6 +67,12 @@ function getPageCategory(relativePath) {
 }
 
 export function buildWikiDataset() {
+  if (!wikiDir) {
+    throw new Error(
+      `Wiki source directory not found. Tried: ${wikiDirCandidates.join(", ")}`
+    );
+  }
+
   const files = walkMarkdownFiles(wikiDir).filter((file) => {
     const relativePath = path.relative(wikiDir, file).replace(/\\/g, "/");
     return !relativePath.startsWith("_updates/");
@@ -83,6 +94,7 @@ export function buildWikiDataset() {
       path: relativePath,
       created: String(data.created || ""),
       updated: String(data.updated || data.created || ""),
+      aliases: Array.isArray(data.aliases) ? data.aliases.map(String) : [],
       sources: Array.isArray(data.sources) ? data.sources.map(String) : [],
       confidence: String(data.confidence || "medium"),
       tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
@@ -99,6 +111,7 @@ export function buildWikiDataset() {
       page.title,
       page.slug.replace(/-/g, " "),
       page.title.replace(/-/g, " "),
+      ...page.aliases,
     ];
     for (const key of keys) {
       const normalized = normalizeKey(key);

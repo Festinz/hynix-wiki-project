@@ -1,9 +1,12 @@
 export const dynamic = "force-dynamic";
 
-// Vercel Cron: 매일 09:00, 18:00 KST
-import { fetchSemiNews, fetchGlobalNews, type PerplexityResponse } from "@/lib/perplexity";
-import { summarizeNews } from "@/lib/gemini";
-import { readNews, writeNews, readMetrics, writeMetrics } from "@/lib/blob-store";
+import {
+  fetchGlobalNews,
+  fetchSemiNews,
+  summarizeNewsWithPerplexity,
+  type PerplexityResponse,
+} from "@/lib/perplexity";
+import { readMetrics, readNews, writeMetrics, writeNews } from "@/lib/blob-store";
 
 function extractArticles(
   response: PerplexityResponse,
@@ -11,28 +14,30 @@ function extractArticles(
 ): { text: string; citations: string[]; source: string }[] {
   const content = response?.choices?.[0]?.message?.content;
   const citations = response?.citations || [];
-  if (!content) return [];
 
-  // Split by numbered list items (1. 2. 3. etc) or double newlines
+  if (!content) {
+    return [];
+  }
+
   const blocks = content
     .split(/(?=\d+[\.\)]\s)/)
-    .map((b) => b.trim())
-    .filter((b) => b.length > 30);
+    .map((block) => block.trim())
+    .filter((block) => block.length > 30);
 
   if (blocks.length > 0) {
     return blocks.map((text) => ({ text, citations, source }));
   }
 
-  // Fallback: split by paragraphs
   return content
     .split("\n\n")
-    .filter((p) => p.trim().length > 30)
-    .map((text) => ({ text: text.trim(), citations, source }));
+    .map((paragraph) => paragraph.trim())
+    .filter((paragraph) => paragraph.length > 30)
+    .map((text) => ({ text, citations, source }));
 }
 
 export async function GET(request: Request) {
-  // Verify cron secret in production
   const authHeader = request.headers.get("authorization");
+
   if (
     process.env.CRON_SECRET &&
     authHeader !== `Bearer ${process.env.CRON_SECRET}`
@@ -45,18 +50,17 @@ export async function GET(request: Request) {
   let totalMetrics = 0;
 
   try {
-    // 1. Perplexity로 뉴스 검색 — 한국(삼성/하이닉스) + 글로벌
     const [samsungRes, hynixRes, globalRes] = await Promise.all([
-      fetchSemiNews("samsung").catch((e) => {
-        errors.push(`Samsung KR news: ${e.message}`);
+      fetchSemiNews("samsung").catch((error: Error) => {
+        errors.push(`Samsung KR news: ${error.message}`);
         return null;
       }),
-      fetchSemiNews("hynix").catch((e) => {
-        errors.push(`Hynix KR news: ${e.message}`);
+      fetchSemiNews("hynix").catch((error: Error) => {
+        errors.push(`Hynix KR news: ${error.message}`);
         return null;
       }),
-      fetchGlobalNews().catch((e) => {
-        errors.push(`Global news: ${e.message}`);
+      fetchGlobalNews().catch((error: Error) => {
+        errors.push(`Global news: ${error.message}`);
         return null;
       }),
     ]);
@@ -75,53 +79,77 @@ export async function GET(request: Request) {
       });
     }
 
-    // 2. Gemini로 요약 + 수치 추출 (최대 15개 병렬, 에러 무시)
     const summaryResults = await Promise.allSettled(
-      allArticles.slice(0, 15).map((a) => summarizeNews(a.text, a.citations, a.source))
+      allArticles
+        .slice(0, 15)
+        .map((article) =>
+          summarizeNewsWithPerplexity(article.text, article.citations, article.source)
+        )
     );
 
     const summaries = summaryResults
-      .filter((r): r is PromiseFulfilledResult<any> => r.status === "fulfilled")
-      .map((r) => r.value)
-      .filter((s) => s && s.title && s.summary);
+      .filter(
+        (
+          result
+        ): result is PromiseFulfilledResult<Awaited<ReturnType<typeof summarizeNewsWithPerplexity>>> =>
+          result.status === "fulfilled"
+      )
+      .map((result) => result.value)
+      .filter((summary) => summary?.title && summary?.summary);
 
-    const failedCount = summaryResults.filter((r) => r.status === "rejected").length;
+    const failedCount = summaryResults.filter(
+      (result) => result.status === "rejected"
+    ).length;
+
     if (failedCount > 0) {
-      errors.push(`${failedCount} articles failed summarization`);
+      errors.push(`${failedCount} articles failed normalization`);
     }
 
-    // 3. news.json 갱신 (Vercel Blob — gracefully skip if no token)
     let blobError = "";
+
     try {
       const existing = await readNews();
-      const existingTitles = new Set(existing.map((e: any) => e.title));
-      const newItems = summaries.filter((s) => !existingTitles.has(s.title));
+      const existingTitles = new Set(existing.map((entry: any) => entry.title));
+      const newItems = summaries.filter((summary) => !existingTitles.has(summary.title));
       const updated = [...newItems, ...existing].slice(0, 100);
+
       await writeNews(updated);
       totalNews = newItems.length;
-    } catch (e: any) {
-      blobError = e.message;
+    } catch (error: any) {
+      blobError = error.message;
       totalNews = summaries.length;
     }
 
-    // 4. metrics.json 갱신 (Vercel Blob)
-    const metricsUpdates = summaries.flatMap((s: any) => s.metricsUpdates || []);
+    const metricsUpdates = summaries.flatMap(
+      (summary) => summary.metricsUpdates || []
+    );
+
     if (metricsUpdates.length > 0) {
       try {
         const metrics = await readMetrics();
 
-        metricsUpdates.forEach((u: any) => {
-          if (!u.product || !u.company || !u.field || !u.value) return;
-          if (!metrics[u.product]) metrics[u.product] = {};
-          if (!metrics[u.product][u.company]) metrics[u.product][u.company] = {};
-          metrics[u.product][u.company][u.field] = u.value;
-          metrics[u.product][u.company].lastUpdated = new Date().toISOString();
+        metricsUpdates.forEach((update) => {
+          if (!update.product || !update.company || !update.field || !update.value) {
+            return;
+          }
+
+          if (!metrics[update.product]) {
+            metrics[update.product] = {};
+          }
+
+          if (!metrics[update.product][update.company]) {
+            metrics[update.product][update.company] = {};
+          }
+
+          metrics[update.product][update.company][update.field] = update.value;
+          metrics[update.product][update.company].lastUpdated =
+            new Date().toISOString();
         });
 
         await writeMetrics(metrics);
         totalMetrics = metricsUpdates.length;
       } catch {
-        // Blob storage not configured
+        // Blob storage is optional for local development.
       }
     }
 
@@ -135,9 +163,9 @@ export async function GET(request: Request) {
       data: summaries,
       timestamp: new Date().toISOString(),
     });
-  } catch (err: any) {
+  } catch (error: any) {
     return Response.json(
-      { ok: false, error: err.message, errors },
+      { ok: false, error: error.message, errors },
       { status: 500 }
     );
   }

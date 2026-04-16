@@ -9,136 +9,135 @@ const item = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.35 } },
 };
 
-const CARDS = [
+const cards = [
   {
-    emoji: "🔬",
-    title: "MOSFET 변천사",
-    subtitle: "Planar → FinFET → GAA/MBCFET",
-    desc: "트랜지스터 게이트 구조의 진화: 1면 → 3면 → 4면으로 채널 제어력 강화",
-    tip: "★ 반드시 1면→3면→4면 흐름을 그림으로 설명",
+    tag: "DEVICE",
+    title: "MOSFET 진화",
+    subtitle: "Planar · FinFET · GAA/MBCFET",
+    desc: "게이트가 채널을 얼마나 감싸느냐에 따라 short-channel 제어가 어떻게 달라지는지 정리했습니다.",
+    tip: "1면, 3면, 4면 제어 차이를 구조로 비교하기",
     href: "/fundamentals/mosfet-evolution",
     color: "#8b5cf6",
   },
   {
-    emoji: "🧱",
+    tag: "STACK",
     title: "High-K Metal Gate",
-    subtitle: "누설전류 해결의 결정적 전환점",
-    desc: "SiO₂→HfO₂, Poly-Si→TiN/TaN 교체로 터널링·공핍층 문제 해결",
-    tip: "★★★ 반드시 둘을 분리해서 답할 것!",
+    subtitle: "누설전류를 줄이기 위한 게이트 스택 전환",
+    desc: "SiO2와 poly-Si의 한계에서 출발해 HfO2와 metal gate가 왜 필요해졌는지 따라갑니다.",
+    tip: "high-k와 metal gate를 반드시 같이 읽어야 하는 이유",
     href: "/fundamentals/high-k-metal-gate",
     color: "#3b82f6",
   },
   {
-    emoji: "📖",
-    title: "5대 공정 변천사",
-    subtitle: "목차형 슬라이드 · 키보드 네비게이션",
-    desc: "devops 강의 스타일 — 사이드바 목차 + 페이지 전환으로 5대 공정을 순서대로 학습",
-    tip: "★ ← → 키보드로 슬라이드 이동, 사이드바 목차 클릭",
+    tag: "FLOW",
+    title: "5대 공정 개요",
+    subtitle: "Photo · Etch · Diffusion · Thin Film · C&C",
+    desc: "공정 순서만 나열하지 않고, 앞 공정이 뒤 공정에 어떤 조건을 남기는지 흐름으로 정리했습니다.",
+    tip: "왜 마지막 공정이 CMP가 아니라 C&C인지 같이 보기",
     href: "/fundamentals/process",
     color: "#0ea5e9",
   },
   {
-    emoji: "⚙️",
-    title: "5대 공정 상세",
-    subtitle: "Photo · Etch · Diffusion · Thin Film · CMP",
-    desc: "반도체 제조의 핵심 5단계 공정 — 각각의 원리, 파라미터, 면접 포인트",
-    tip: "★ PR 구성요소, Wet/Dry 식각, ALD Self-limitation",
-    href: "/fundamentals/process/photo",
+    tag: "DETAIL",
+    title: "공정 상세",
+    subtitle: "재료 · 파라미터 · 형상 문제 · 인터랙티브",
+    desc: "RIE, ion implantation, ALD window, PVD overhang, C&C처럼 자주 헷갈리는 포인트를 손으로 만지듯 볼 수 있습니다.",
+    tip: "각 공정 페이지에서 인터랙티브 블록 먼저 보기",
+    href: "/fundamentals/process/etch",
     color: "#16a34a",
   },
   {
-    emoji: "💧",
-    title: "누설전류와 솔루션",
-    subtitle: "OFF여야 하는데 흐르는 전류 5가지",
-    desc: "HCI · Gate Oxide Tunneling · DIBL · GIDL · Punch-through 각각의 원인과 해결책",
-    tip: "★ 각 누설전류와 솔루션 1:1 매칭 필수",
+    tag: "LEAKAGE",
+    title: "누설전류와 억제 전략",
+    subtitle: "DIBL · GIDL · Punch Through · HCI",
+    desc: "누설 유형별 위치, 원인, 문제, 해법을 같은 형식으로 맞춰서 정리했습니다.",
+    tip: "공정 해법과 누설 메커니즘을 1:1로 연결해 보기",
     href: "/fundamentals/leakage-current",
     color: "#ef4444",
   },
   {
-    emoji: "📊",
-    title: "반도체 데이터 4종류 & SPC/FDC",
-    subtitle: "계측 · 설비 · 소자 · 수율 데이터",
-    desc: "통계적 공정 관리(SPC)와 설비 이상 감지(FDC) — 스마트팩토리의 핵심",
-    tip: "★ SPC는 결과 기반, FDC는 원인 기반",
+    tag: "DATA",
+    title: "계측 · SPC · FDC",
+    subtitle: "공정에서 수율까지 이어지는 데이터 읽기",
+    desc: "CD와 두께, 전기 특성, 설비 로그를 따로 보지 않고 같은 이야기로 읽는 관점을 정리했습니다.",
+    tip: "결과 관리 SPC와 원인 감지 FDC의 차이 먼저 보기",
     href: "/fundamentals/spc-fdc",
     color: "#f59e0b",
   },
   {
-    emoji: "📡",
+    tag: "UPDATES",
     title: "최신 트렌드",
-    subtitle: "자동 갱신 · 매주 월/목",
-    desc: "Perplexity + Gemini가 수집하는 HBM, GAA, EUV, 3D DRAM 등 최신 논문/뉴스",
-    tip: "왜 중요한지 · 공부 방법 · 면접 팁 자동 생성",
+    subtitle: "Perplexity 브리핑과 위키 연결",
+    desc: "HBM, TSV, GAA, AI 메모리 이슈를 기존 노드와 연결해서 보도록 구성했습니다.",
+    tip: "최신 뉴스가 기존 개념 노드 어디에 붙는지 확인하기",
     href: "/fundamentals/trends",
     color: "#10b981",
-  },
-  {
-    emoji: "🤖",
-    title: "AI 면접 코치",
-    subtitle: "Gemini 2.5 Flash 기반",
-    desc: "SK하이닉스 · 삼성전자 양산기술 면접관 출신 선배가 면접 준비를 도와줍니다",
-    tip: "면접 모드 · 트렌드 모드 · 개념 모드",
-    href: "/fundamentals/ai-coach",
-    color: "#22c55e",
   },
 ];
 
 export default function FundamentalsPage() {
   return (
-    <main className="min-h-screen">
-      {/* Header */}
+    <main className="min-h-screen px-4 pb-12 pt-4">
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="border-b border-gray-800/60 bg-gray-950/80 backdrop-blur-md sticky top-0 z-50"
+        className="glass-panel sticky top-4 z-40 mx-auto max-w-5xl rounded-2xl"
       >
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center gap-4">
-          <Link href="/" className="text-gray-500 hover:text-gray-300 transition-colors">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <div className="flex items-center gap-4 px-4 py-4">
+          <Link href="/" className="text-gray-500 transition-colors hover:text-gray-300">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </Link>
           <div>
-            <h1 className="text-xl font-bold text-green-500">반도체 상식</h1>
-            <p className="text-xs text-gray-500">MOSFET · 5대 공정 · 트렌드 · AI 면접 코치</p>
+            <h1 className="text-xl font-bold text-green-400">공정 공부 경로</h1>
+            <p className="text-xs text-gray-500">MOSFET · 5대 공정 · HKMG · 누설전류 · 최신 트렌드</p>
           </div>
         </div>
       </motion.header>
 
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        {/* 7-card grid */}
+      <div className="mx-auto max-w-5xl py-8">
+        <div className="glass-panel-strong mb-6 rounded-[24px] p-6 md:p-8">
+          <p className="text-xs uppercase tracking-[0.28em] text-green-300/75">Knowledge Paths</p>
+          <h2 className="mt-3 text-3xl font-bold text-white md:text-4xl">
+            정의보다 연결을 먼저 보게 만드는 반도체 공부 경로
+          </h2>
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-gray-300 md:text-base">
+            이 섹션은 하이닉스 위키를 읽기 전에 필요한 공정, 소자, 계측 배경을 한 번에 연결해 두는 입구입니다.
+            각 카드에서 자세한 설명으로 들어가고, 다시 위키 노드로 확장되는 흐름으로 구성했습니다.
+          </p>
+        </div>
+
         <motion.div
           variants={container}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
         >
-          {CARDS.map((card) => (
+          {cards.map((card) => (
             <motion.div key={card.title} variants={item}>
               <Link href={card.href}>
                 <motion.div
                   whileHover={{ y: -6, scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  className="rounded-2xl border border-gray-800 bg-gray-900/50 p-6 hover:border-gray-700 transition-all cursor-pointer h-full flex flex-col"
-                  style={{ ["--card-color" as any]: card.color }}
+                  className="glass-panel glass-card-hover flex h-full cursor-pointer flex-col rounded-2xl p-6"
                 >
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-3xl">{card.emoji}</span>
-                    <div
-                      className="w-1 h-8 rounded-full opacity-60"
-                      style={{ backgroundColor: card.color }}
-                    />
+                  <div className="mb-3 flex items-center gap-3">
+                    <span
+                      className="rounded-md border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em]"
+                      style={{ borderColor: `${card.color}40`, color: card.color }}
+                    >
+                      {card.tag}
+                    </span>
+                    <div className="h-8 w-1 rounded-full opacity-70" style={{ backgroundColor: card.color }} />
                     <div>
                       <h3 className="text-sm font-bold text-gray-200">{card.title}</h3>
                       <p className="text-[10px] text-gray-500">{card.subtitle}</p>
                     </div>
                   </div>
 
-                  <p className="text-xs text-gray-400 leading-relaxed flex-1 mb-4">
-                    {card.desc}
-                  </p>
+                  <p className="mb-4 flex-1 text-xs leading-relaxed text-gray-400">{card.desc}</p>
 
                   <div
                     className="rounded-lg px-3 py-2 text-[10px] font-medium leading-snug"
@@ -153,7 +152,7 @@ export default function FundamentalsPage() {
 
                   <div className="mt-4 flex items-center gap-1 text-xs text-gray-500">
                     자세히 보기
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
@@ -162,7 +161,6 @@ export default function FundamentalsPage() {
             </motion.div>
           ))}
         </motion.div>
-
       </div>
     </main>
   );

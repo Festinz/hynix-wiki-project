@@ -6,32 +6,26 @@ import { motion } from "framer-motion";
 export default function HighKCompareSlider() {
   const [thickness, setThickness] = useState(50);
 
-  // SiO2: k=3.9, HfO2: k~20
   const sio2K = 3.9;
   const hfo2K = 20;
-  // Physical thickness slider: 1nm to 5nm
-  const physicalThickness = 1 + (thickness / 100) * 4; // 1~5nm
-  const eotSiO2 = physicalThickness; // EOT = physical for SiO2
-  const eotHfO2 = physicalThickness * (sio2K / hfo2K); // EOT for HfO2
+  const physicalThickness = 1 + (thickness / 100) * 4;
+  const eotSiO2 = physicalThickness;
+  const eotHfO2 = physicalThickness * (sio2K / hfo2K);
 
-  // Tunneling probability (simplified exponential)
   const tunnelingS = Math.min(100, Math.exp(4 - physicalThickness * 1.5) * 10);
   const tunnelingH = Math.min(100, Math.exp(4 - physicalThickness * 1.5) * 0.3);
 
   return (
-    <div className="rounded-2xl border border-gray-800 bg-gray-900/60 p-6">
-      <h3 className="text-sm font-semibold text-gray-300 mb-1">
-        High-K vs SiO₂ — 유전율 비교
-      </h3>
-      <p className="text-[11px] text-gray-500 mb-5">
-        같은 물리적 두께에서의 전기적 특성 차이를 확인하세요
+    <div className="glass-panel rounded-2xl p-6">
+      <h3 className="mb-1 text-sm font-semibold text-gray-300">High-K vs SiO2 유전체 비교</h3>
+      <p className="mb-5 text-[11px] text-gray-500">
+        같은 물리 두께에서 전기적 두께와 터널링 차이가 어떻게 벌어지는지 직관적으로 볼 수 있습니다.
       </p>
 
-      {/* Slider */}
       <div className="mb-6">
-        <div className="flex justify-between text-[10px] text-gray-500 mb-2">
-          <span>물리적 두께: {physicalThickness.toFixed(1)} nm</span>
-          <span>1nm — 5nm</span>
+        <div className="mb-2 flex justify-between text-[10px] text-gray-500">
+          <span>물리 두께: {physicalThickness.toFixed(1)} nm</span>
+          <span>1nm ~ 5nm</span>
         </div>
         <input
           type="range"
@@ -39,37 +33,32 @@ export default function HighKCompareSlider() {
           max="100"
           value={thickness}
           onChange={(e) => setThickness(Number(e.target.value))}
-          className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
+          className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-800 accent-blue-500"
         />
       </div>
 
-      {/* Comparison visualization */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {/* SiO2 */}
+      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="rounded-xl border border-gray-700 bg-gray-800/30 p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-3 h-3 rounded-sm bg-gray-500" />
-            <span className="text-xs font-semibold text-gray-300">SiO₂ (기존)</span>
+          <div className="mb-3 flex items-center gap-2">
+            <div className="h-3 w-3 rounded-sm bg-gray-500" />
+            <span className="text-xs font-semibold text-gray-300">SiO2 (기존)</span>
           </div>
-          <div className="flex items-end gap-4 mb-3">
-            {/* Gate bar */}
+          <div className="mb-3 flex items-end gap-4">
             <div className="flex flex-col items-center">
-              <span className="text-[8px] text-gray-600 mb-1">Gate</span>
-              <div className="w-16 bg-gray-600 rounded-sm" style={{ height: 60 }} />
+              <span className="mb-1 text-[8px] text-gray-600">Gate</span>
+              <div className="w-16 rounded-sm bg-gray-600" style={{ height: 60 }} />
             </div>
-            {/* Oxide layer */}
             <div className="flex flex-col items-center">
-              <span className="text-[8px] text-gray-600 mb-1">산화막</span>
+              <span className="mb-1 text-[8px] text-gray-600">산화막</span>
               <motion.div
-                className="w-16 bg-amber-700/60 rounded-sm border border-amber-600/30"
+                className="w-16 rounded-sm border border-amber-600/30 bg-amber-700/60"
                 animate={{ height: Math.max(8, physicalThickness * 12) }}
                 transition={{ duration: 0.2 }}
               />
             </div>
-            {/* Channel */}
             <div className="flex flex-col items-center">
-              <span className="text-[8px] text-gray-600 mb-1">채널</span>
-              <div className="w-16 bg-blue-900/40 rounded-sm" style={{ height: 30 }} />
+              <span className="mb-1 text-[8px] text-gray-600">채널</span>
+              <div className="w-16 rounded-sm bg-blue-900/40" style={{ height: 30 }} />
             </div>
           </div>
           <div className="space-y-1.5 text-[11px]">
@@ -82,61 +71,59 @@ export default function HighKCompareSlider() {
               <span className="text-gray-300">{eotSiO2.toFixed(2)} nm</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">터널링 확률</span>
-              <span className="text-red-400 font-semibold">{tunnelingS.toFixed(1)}%</span>
+              <span className="text-gray-500">직접 터널링</span>
+              <span className="font-semibold text-red-400">{tunnelingS.toFixed(1)}%</span>
             </div>
           </div>
-          {/* Tunneling bar */}
-          <div className="mt-2 h-1.5 bg-gray-800 rounded-full overflow-hidden">
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-gray-800">
             <motion.div
-              className="h-full bg-red-500 rounded-full"
+              className="h-full rounded-full bg-red-500"
               animate={{ width: `${tunnelingS}%` }}
               transition={{ duration: 0.3 }}
             />
           </div>
         </div>
 
-        {/* HfO2 */}
         <div className="rounded-xl border border-blue-500/20 bg-blue-950/10 p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-3 h-3 rounded-sm bg-blue-500" />
-            <span className="text-xs font-semibold text-blue-300">HfO₂ (High-K)</span>
+          <div className="mb-3 flex items-center gap-2">
+            <div className="h-3 w-3 rounded-sm bg-blue-500" />
+            <span className="text-xs font-semibold text-blue-300">HfO2 (High-K)</span>
           </div>
-          <div className="flex items-end gap-4 mb-3">
+          <div className="mb-3 flex items-end gap-4">
             <div className="flex flex-col items-center">
-              <span className="text-[8px] text-gray-600 mb-1">Metal Gate</span>
-              <div className="w-16 bg-blue-600/60 rounded-sm" style={{ height: 60 }} />
+              <span className="mb-1 text-[8px] text-gray-600">Metal Gate</span>
+              <div className="w-16 rounded-sm bg-blue-600/60" style={{ height: 60 }} />
             </div>
             <div className="flex flex-col items-center">
-              <span className="text-[8px] text-gray-600 mb-1">High-K</span>
+              <span className="mb-1 text-[8px] text-gray-600">High-K</span>
               <motion.div
-                className="w-16 bg-blue-500/40 rounded-sm border border-blue-400/30"
+                className="w-16 rounded-sm border border-blue-400/30 bg-blue-500/40"
                 animate={{ height: Math.max(8, physicalThickness * 12) }}
                 transition={{ duration: 0.2 }}
               />
             </div>
             <div className="flex flex-col items-center">
-              <span className="text-[8px] text-gray-600 mb-1">채널</span>
-              <div className="w-16 bg-blue-900/40 rounded-sm" style={{ height: 30 }} />
+              <span className="mb-1 text-[8px] text-gray-600">채널</span>
+              <div className="w-16 rounded-sm bg-blue-900/40" style={{ height: 30 }} />
             </div>
           </div>
           <div className="space-y-1.5 text-[11px]">
             <div className="flex justify-between">
               <span className="text-gray-500">유전율 (k)</span>
-              <span className="text-blue-300">{hfo2K}</span>
+              <span className="text-gray-300">{hfo2K}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">EOT</span>
-              <span className="text-blue-300">{eotHfO2.toFixed(2)} nm</span>
+              <span className="text-gray-300">{eotHfO2.toFixed(2)} nm</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">터널링 확률</span>
-              <span className="text-emerald-400 font-semibold">{tunnelingH.toFixed(1)}%</span>
+              <span className="text-gray-500">직접 터널링</span>
+              <span className="font-semibold text-cyan-300">{tunnelingH.toFixed(1)}%</span>
             </div>
           </div>
-          <div className="mt-2 h-1.5 bg-gray-800 rounded-full overflow-hidden">
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-gray-800">
             <motion.div
-              className="h-full bg-emerald-500 rounded-full"
+              className="h-full rounded-full bg-cyan-400"
               animate={{ width: `${tunnelingH}%` }}
               transition={{ duration: 0.3 }}
             />
@@ -144,17 +131,19 @@ export default function HighKCompareSlider() {
         </div>
       </div>
 
-      {/* Key insight */}
-      <div className="rounded-lg bg-blue-950/20 border border-blue-500/10 p-3">
-        <p className="text-[11px] text-gray-400">
-          <span className="text-blue-400 font-semibold">EOT 공식:</span>{" "}
-          t_physical x (k_SiO₂ / k_high) = {physicalThickness.toFixed(1)} x ({sio2K} / {hfo2K}) ={" "}
-          <span className="text-blue-300 font-semibold">{eotHfO2.toFixed(2)} nm</span>
-        </p>
-        <p className="text-[10px] text-gray-500 mt-1">
-          같은 물리적 두께 {physicalThickness.toFixed(1)}nm에서 HfO₂는 전기적으로{" "}
-          {eotHfO2.toFixed(2)}nm SiO₂와 동일 → 터널링 누설 {((1 - tunnelingH / Math.max(tunnelingS, 0.01)) * 100).toFixed(0)}% 감소
-        </p>
+      <div className="grid grid-cols-1 gap-3 text-[11px] text-gray-400 md:grid-cols-3">
+        <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+          <div className="text-gray-300">왜 중요한가</div>
+          <p className="mt-1">같은 gate control을 유지하면서 물리막은 더 두껍게 가져가 누설전류를 줄이기 위해서입니다.</p>
+        </div>
+        <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+          <div className="text-gray-300">무엇이 보이나</div>
+          <p className="mt-1">HfO2는 k가 커서 EOT를 더 작게 만들 수 있고, 터널링 확률은 훨씬 낮게 유지됩니다.</p>
+        </div>
+        <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+          <div className="text-gray-300">연결 개념</div>
+          <p className="mt-1">High-K는 metal gate와 함께 봐야 실제 threshold control과 poly depletion 문제까지 이어집니다.</p>
+        </div>
       </div>
     </div>
   );

@@ -1,37 +1,42 @@
 ---
-title: "??? ?? ??"
+title: "전체 지식 지도"
 type: topic
 created: 2026-04-15
-updated: 2026-04-15
-sources: ["raw/core/hynix ?? ?? 5? ??.pdf", "raw/metrology-yield/?? 1?.pdf", "raw/metrology-yield/?? 2?.pdf", "raw/metrology-yield/?? 3?.pdf", "raw/spotfire/[Lecture] Spotfire.pdf", "raw/core/??? ??.pdf"]
+updated: 2026-04-16
+aliases: ["전체 지식 지도"]
+sources: ["raw/core/hynix 지식 쌓기 5대 공정.pdf", "raw/metrology-yield/교안 1권.pdf", "raw/metrology-yield/교안 2권.pdf", "raw/metrology-yield/교안 3권.pdf", "raw/spotfire/[Lecture] Spotfire.pdf", "raw/core/반도체 정리.pdf"]
 confidence: high
 tags: ["overview", "map", "3-axis"]
 ---
 
-> ? ??? ???? / ???????? / ?????? ? ??? ??? ?? ??? ???.
+> 이 위키는 공정기술, 계측→소자→수율, 데이터·산업이라는 세 축이 서로 교차하는 구조로 읽어야 가장 잘 보인다.
 
-## 1. ???? ?
-- ??? [[5? ??]]?? ?? ??? [[Photolithography]], [[Etching]], [[Diffusion]], [[Ion-Implantation]], [[Thin-Film-Deposition]], [[CMP-Cleaning]]??.
-- ?? ??? ?? ??? [[High-K-Metal-Gate]], [[Reactive-Sputtering]], [[PVD-vs-CVD-vs-ALD]], [[Diffusion-vs-Ion-Implantation]]??.
-- why ?? ??? [[Argon]], [[Halogen-Etch-Gases]], [[ALD-Window]], [[Poly-Si-vs-Metal-Gate]]?.
+## What
+- 첫 번째 축은 웨이퍼 위에 구조를 만드는 공정기술 축이다.
+- 두 번째 축은 그 결과를 측정하고 해석해 수율까지 연결하는 인과 축이다.
+- 세 번째 축은 그렇게 쌓인 지식이 실제 메모리 산업과 데이터 기반 Fab 운영으로 어떻게 이어지는지 보는 축이다.
 
-## 2. ?? ? ?? ? ?? ?
-- [[Metrology]]? [[ADI-CD]], [[ACI-CD]], [[Overlay]], ??, defect? ?? ??? ??? ????.
-- [[Device Characterization]]? [[Threshold-Voltage]], [[Subthreshold-Slope]], [[DIBL]] ??? ??? ??? ???.
-- [[Yield-Analysis]]? defective loss? parametric loss? ???????? ???? ????.
-- ? ?? ??? [[Process-to-Yield-Pipeline]]? [[Metrology-to-Device-Linkage]]?? ????.
+## How
+- 공정기술 축은 [[5대 공정]], [[포토리소그래피]], [[식각]], [[확산과 이온주입]], [[박막 증착]], [[CMP와 세정]]을 따라간다.
+- 계측→소자→수율 축은 [[계측]], [[소자 특성 분석]], [[문턱전압]], [[누설전류]], [[수율 분석]], [[공정→계측→소자→수율 파이프라인]]으로 이어진다.
+- 데이터·산업 축은 [[데이터 기반 Fab]], [[Spotfire 상관관계 읽기]], [[HBM]], [[MR-MUF]], [[TSV]], [[산업 핫이슈]], [[SK하이닉스 메모리 포지셔닝]]으로 확장된다.
 
-## 3. ??? ? ?? ?
-- [[Data Visualization]]? [[Data-Driven-Fab]]? ? Spotfire ?? ??? ???? ????.
-- [[Industry-Hot-Issues]]? [[Memory Semiconductor]]? EUV, ???, HBM, DRAM, NAND? ?? ??? ?? ?? ???? ???.
-- [[SK-Hynix-Memory-Positioning]]? [[MR-MUF]]? SK???? ??? ?? ??? ????.
+## Why
+- 공정만 보면 구조는 보이지만 의미가 약하고,
+- electrical만 보면 원인이 흐려지고,
+- 산업만 보면 기술 선택의 이유가 얕아진다.
+- 세 축을 동시에 읽어야 “왜 이 기술이 선택됐는가”가 선명해진다.
 
-## 4. ?? ?? ??
-- ??: [[5? ??]] ? [[Process-to-Yield-Pipeline]] ? [[Memory Semiconductor]]
-- ?? ??: [[Photolithography]] ? [[Etching]] ? [[Thin-Film-Deposition]] ? [[High-K-Metal-Gate]]
-- ??? ??: [[Metrology]] ? [[Device Characterization]] ? [[Yield-Analysis]] ? [[Data Visualization]]
-- ?? ??: [[Industry-Hot-Issues]] ? [[HBM]] ? [[MR-MUF]] ? [[SK-Hynix-Memory-Positioning]]
+## Measure
+- 좋은 위키 구조라면 어떤 공정 노트에서도 [[계측]], [[소자 특성 분석]], [[수율 분석]]으로 이어지는 길이 보여야 한다.
+- 반대로 산업 노트에서도 다시 [[HBM]], [[박막 증착]], [[CMP와 세정]] 같은 기술 노드로 되돌아올 수 있어야 한다.
 
-## 5. Confidence Notes
-- [[Metrology-Volume-3-Source]], [[Spotfire-Week-2-Source]], [[Spotfire-Week-3-Source]]? ??? ?? ?? ??? ?? ?? ??? ??.
-- MR-MUF? SK???? ?? ??? ?? ??? ?? ?? ?? ???? ????? ???.
+## Connections
+- [[위키 인덱스]]
+- [[공정 통합 맵]]
+- [[공정→계측→소자→수율 파이프라인]]
+- [[데이터 기반 Fab]]
+- [[위키 로그]]
+
+## Open Questions
+- 후공정과 패키징 축을 지금보다 더 세밀하게 확장할 수 있다.

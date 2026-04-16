@@ -130,7 +130,7 @@ export default function CompanyComparisonCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="rounded-2xl border border-gray-800 bg-gray-900/60 backdrop-blur-sm"
+      className="glass-panel rounded-2xl"
     >
       {/* Card header */}
       <div className="p-6 border-b border-gray-800/60">

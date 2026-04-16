@@ -1,10 +1,7 @@
-// Shared data helpers for tech detail pages
-import samsungData from "@/data/samsung-tech.json";
 import hynixData from "@/data/hynix-tech.json";
 import metricsData from "@/data/metrics.json";
 import newsData from "@/data/news.json";
-
-/* ---- slug ↔ key mapping ---- */
+import samsungData from "@/data/samsung-tech.json";
 
 const SLUG_MAP: Record<string, string> = {
   hbm4: "HBM4",
@@ -27,14 +24,12 @@ export function getMetrics(key: string) {
   return (metricsData as any)[key] || null;
 }
 
-/* ---- category-based news ---- */
-
 const SLUG_CATEGORIES: Record<string, string[]> = {
-  HBM4: ["hbm"],
+  HBM4: ["hbm", "packaging"],
   DDR5: ["memory"],
   GDDR7: ["memory"],
   LPDDR6: ["memory"],
-  NAND: ["memory"],
+  NAND: ["memory", "market"],
 };
 
 interface NewsItem {
@@ -58,8 +53,6 @@ export function getRelatedNews(key: string, company: string, limit = 4): NewsIte
     .slice(0, limit);
 }
 
-/* ---- spec row builder ---- */
-
 export interface SpecRow {
   label: string;
   value: string | null;
@@ -67,44 +60,46 @@ export interface SpecRow {
   unit: string;
 }
 
-export function buildSpecs(
-  lineup: any,
-  metricsCompany: any,
-  metricsCompetitor: any
-): SpecRow[] {
+function withUnit(value: string | null | undefined, unit?: string) {
+  if (value == null || value === "") return null;
+  return unit ? `${value} ${unit}` : String(value);
+}
+
+export function buildSpecs(lineup: any, metricsCompany: any, metricsCompetitor: any): SpecRow[] {
   const specs = lineup?.specs || {};
+
   return [
     {
-      label: "핀속도",
-      value: specs.pinSpeed?.value || null,
-      competitorValue: metricsCompetitor?.pinSpeed ? `${metricsCompetitor.pinSpeed}` : null,
-      unit: "Gbps",
+      label: "전송속도",
+      value: specs.pinSpeed?.value || withUnit(metricsCompany?.pinSpeed, "Gbps"),
+      competitorValue: withUnit(metricsCompetitor?.pinSpeed, "Gbps"),
+      unit: "",
     },
     {
       label: "대역폭",
-      value: specs.bandwidth?.value || null,
-      competitorValue: metricsCompetitor?.bandwidth ? `${metricsCompetitor.bandwidth}` : null,
-      unit: "TB/s",
+      value: specs.bandwidth?.value || withUnit(metricsCompany?.bandwidth, "TB/s"),
+      competitorValue: withUnit(metricsCompetitor?.bandwidth, "TB/s"),
+      unit: "",
     },
     {
       label: "용량",
-      value: specs.capacity?.value || null,
-      competitorValue: metricsCompetitor?.capacity ? `${metricsCompetitor.capacity}` : null,
-      unit: "GB",
+      value: specs.capacity?.value || withUnit(metricsCompany?.capacity, "GB"),
+      competitorValue: withUnit(metricsCompetitor?.capacity, "GB"),
+      unit: "",
     },
     {
       label: "전력효율",
-      value: specs.powerEfficiency?.value || null,
-      competitorValue: metricsCompetitor?.powerEfficiency ? `${metricsCompetitor.powerEfficiency}%↓` : null,
+      value: specs.powerEfficiency?.value || withUnit(metricsCompany?.powerEfficiency, "%"),
+      competitorValue: withUnit(metricsCompetitor?.powerEfficiency, "%"),
       unit: "",
     },
     {
       label: "공정 노드",
-      value: specs.processNode || null,
+      value: specs.processNode || metricsCompany?.processNode || null,
       competitorValue: metricsCompetitor?.processNode || null,
       unit: "",
     },
-  ];
+  ].filter((row) => row.value || row.competitorValue);
 }
 
 export function getJedec(metricsCompany: any, jedecData: any) {
@@ -116,8 +111,6 @@ export function getJedec(metricsCompany: any, jedecData: any) {
   };
 }
 
-/* ---- analogy data per slug ---- */
-
 export interface AnalogyData {
   emoji: string;
   title: string;
@@ -126,42 +119,40 @@ export interface AnalogyData {
 
 const ANALOGIES: Record<string, AnalogyData> = {
   HBM4: {
-    emoji: "🏗️",
-    title: "초고층 아파트 단지",
+    emoji: "🏙️",
+    title: "수직으로 쌓은 초고속 메모리 타워",
     description:
-      "일반 메모리(DDR)가 단층 주택이라면, HBM은 12층짜리 아파트를 수직으로 쌓아 올린 것입니다. 각 층(DRAM 다이)이 엘리베이터(TSV, 실리콘 관통 전극)로 연결되어, 같은 땅(면적)에서 수십 배 더 많은 데이터를 동시에 이동시킬 수 있습니다. AI GPU 옆에 이 아파트를 바로 붙여놓으면 — 그게 HBM입니다.",
+      "HBM은 여러 DRAM die를 TSV로 수직 연결해 같은 면적에서 훨씬 더 많은 데이터를 동시에 보내는 구조입니다. GPU 바로 옆의 초고층 메모리 빌딩처럼 이해하면 편합니다.",
   },
   DDR5: {
     emoji: "🚄",
-    title: "KTX에서 SRT로 업그레이드",
+    title: "차선이 늘어난 고속철도",
     description:
-      "DDR4가 KTX(300km/h)라면, DDR5는 SRT(350km/h)에 2차선 도로가 4차선으로 넓어진 것입니다. 같은 시간에 더 많은 데이터가 오갈 수 있고, High-K Metal Gate 기술로 전력 누수(누설전류)까지 대폭 줄였습니다.",
+      "DDR5는 DDR4보다 더 높은 속도와 더 많은 병렬 처리를 지원합니다. 같은 시간에 더 많은 데이터를 싣고 달릴 수 있는 고속철도에 가깝습니다.",
   },
   GDDR7: {
     emoji: "🎮",
-    title: "GPU의 전용 고속도로",
+    title: "GPU 주변의 고속 외곽도로",
     description:
-      "HBM이 AI용 초고속 엘리베이터라면, GDDR7은 게이밍 GPU를 위한 전용 8차선 고속도로입니다. GPU 양쪽에 4개씩, 총 8개 칩이 붙어서 32Gbps로 데이터를 쏟아냅니다. 하이닉스는 여기서 칩당 48GB로 차선당 짐을 33% 더 실었습니다.",
+      "GDDR7은 HBM처럼 수직 적층은 아니지만, GPU 주변에 여러 칩을 배치해 그래픽과 AI 추론에 필요한 높은 전송량을 확보합니다.",
   },
   LPDDR6: {
     emoji: "🔋",
-    title: "에코 드라이브 자동차",
+    title: "상황에 맞춰 스스로 연비를 조절하는 메모리",
     description:
-      "일반 메모리가 항상 풀 스로틀로 달리는 차라면, LPDDR6+DVFS는 상황에 따라 속도를 자동 조절하는 에코 드라이브 차입니다. 게이밍할 때만 최대 속도, 카톡할 때는 절전 모드 — 전력 20% 절감.",
+      "LPDDR6는 모바일과 온디바이스 AI용 메모리답게 성능보다 효율 최적화가 핵심입니다. DVFS가 그 중심 기술입니다.",
   },
   NAND: {
-    emoji: "📦",
-    title: "초대형 창고",
+    emoji: "🗄️",
+    title: "층층이 쌓아 올린 초대형 저장 창고",
     description:
-      "DRAM이 작업대(빠르지만 작음)라면, NAND는 대형 창고(크지만 느림)입니다. SSD의 핵심 부품으로, 수백 층을 수직으로 쌓아(3D NAND) 용량을 극대화합니다.",
+      "NAND는 DRAM보다 느리지만 훨씬 많은 데이터를 오래 저장합니다. 3D NAND는 그 저장 창고를 위로 계속 증축하는 방식입니다.",
   },
 };
 
 export function getAnalogy(key: string): AnalogyData {
-  return ANALOGIES[key] || { emoji: "💡", title: key, description: "" };
+  return ANALOGIES[key] || { emoji: "🧩", title: key, description: "" };
 }
-
-/* ---- deep dive accordion data ---- */
 
 export interface DeepDiveItem {
   title: string;
@@ -171,89 +162,71 @@ export interface DeepDiveItem {
 const DEEP_DIVES: Record<string, (company: "samsung" | "hynix", lineup: any) => DeepDiveItem[]> = {
   HBM4: (company, lineup) => [
     {
-      title: "TSV (Through Silicon Via) — 수직 연결의 핵심",
+      title: "왜 HBM은 TSV가 핵심인가",
       content:
-        "각 DRAM 다이를 수직으로 관통하는 구리 기둥입니다.\n\n• 지름: ~5μm, 깊이: ~50μm\n• 1개 HBM4에 수천 개의 TSV가 동시 데이터 전송\n• TSV 수가 많을수록 대역폭↑, but 수율 관리 난이도↑\n• HBM4에서는 2048bit 인터페이스 (HBM3E 대비 확장)",
+        "HBM은 각 DRAM die를 TSV로 수직 연결해 I/O를 폭넓게 확보합니다.\n\n- 같은 footprint에서 대역폭을 크게 키울 수 있습니다.\n- GPU와의 거리를 줄여 지연과 전력 손실을 줄입니다.\n- 적층 수가 늘어날수록 열과 수율 관리가 더 중요해집니다.",
     },
     {
-      title: company === "samsung" ? "DTCO + IDM 통합 전략" : "MR-MUF (Mass Reflow Molded Underfill)",
+      title: company === "samsung" ? "삼성의 포인트: DTCO + 파운드리 연계" : "하이닉스의 포인트: MR-MUF + 패키징 완성도",
       content:
         company === "samsung"
-          ? "Design-Technology Co-Optimization의 약자.\n\n• 설계 단계부터 공정 최적화를 동시 진행\n• IDM(종합반도체)의 강점: 메모리 + 베이스다이(4nm) + 패키징을 한 회사에서 원스톱\n• 베이스다이를 자체 4nm 파운드리로 제조 → 경쟁사(TSMC 위탁) 대비 비용/소통 우위\n• HCB(Hybrid Copper Bonding)로 열저항 20%↓ → 16단+ 가능"
-          : "Mass Reflow Molded Underfill의 약자.\n\n• 기존 MR(Mass Reflow) + TC-NCF 대비 열전도·신뢰성 우수\n• HBM3E에서 수율 80% 달성의 핵심 기술\n• TSV 접합 후 몰딩 과정에서 void(기포) 최소화\n• TSMC와 협력: 로직다이 + 패키징 MOU로 분업 체계 확립",
+          ? "삼성은 HBM을 메모리 단품이 아니라 파운드리와 패키징까지 이어지는 통합 전략으로 봅니다.\n\n- base die를 자체 파운드리와 연계해 최적화하려는 흐름\n- X-Cube, H-Cube 같은 패키징 역량과 함께 읽어야 함\n- 메모리와 시스템반도체를 같이 가진 구조가 강점이자 변수"
+          : "하이닉스는 HBM 리더십을 패키징 안정성과 수율로 지켜왔습니다.\n\n- MR-MUF는 적층과 언더필 품질을 안정화하는 데 중요\n- TSV, mold, 열경로가 함께 맞아야 실제 양산 경쟁력이 생김\n- 단순 속도보다 일관된 출하 품질이 핵심",
     },
     {
-      title: "HBM4E — 차세대 로드맵",
+      title: "HBM4 이후 관전 포인트",
       content:
-        "• 핀속도: 16 Gbps (HBM4 대비 +37%)\n• 대역폭: 4.0 TB/s\n• 적층: 16-Hi 예상\n• GTC 2026에서 실물 최초 공개\n• 2027년부터 Custom HBM 시대 — 고객별 맞춤 사양 제공 예정",
-    },
-    {
-      title: "발열 관리 — HBM의 최대 과제",
-      content:
-        "12단, 16단 적층 시 중심부 DRAM의 열이 빠져나가기 어려움.\n\n• HCB (Hybrid Copper Bonding): 범프 대신 구리 직접 접합 → 열 경로 단축\n• 실리콘 인터포저 내 열 확산 경로 최적화\n• 유리 기판: 유기 기판 대비 열전도율 우수 (SK하이닉스 개발 중)\n• 방열 솔루션이 HBM 세대 발전의 병목 — 구조 설계 혁신 필수",
+        "HBM4E와 custom HBM으로 가면서 단순 메모리 성능이 아니라 고객 맞춤형 인터페이스와 패키징 협업이 더 중요해집니다.\n\n- 더 높은 pin speed\n- 더 많은 적층 수\n- 더 어려워지는 열 관리와 수율 확보",
     },
   ],
   DDR5: (company, lineup) => [
     {
-      title: "High-K Metal Gate란?",
+      title: "왜 DDR5에서 HKMG가 다시 중요해졌나",
       content:
-        "두 가지 다른 기술의 조합:\n\n1. High-K 유전체: SiO₂(유전율 3.9) → HfO₂(유전율 ~20)\n   → 물리적으로 두꺼운 막을 유지하면서 전기적으론 얇은 막과 동일\n   → 터널링 누설전류 대폭 감소\n\n2. Metal Gate: Poly-Si → TiN/TaN 금속\n   → Poly-Si의 공핍층(Depletion) 문제 해결\n   → Work Function 정밀 조절 가능\n\n★ 면접 포인트: 반드시 둘을 분리해서 답할 것!",
+        "DDR5는 속도와 집적도가 오르면서 누설전류와 전력 손실 문제가 더 민감해집니다.\n\n- high-k는 gate leakage를 줄이고\n- metal gate는 poly depletion 문제를 줄이며\n- 결국 고속 메모리에서 전력효율을 유지하는 기반이 됩니다.",
     },
     {
-      title: "DVFS (Dynamic Voltage Frequency Scaling)",
+      title: company === "samsung" ? "삼성의 포인트: 공정 최적화" : "하이닉스의 포인트: DVFS 중심 효율",
       content:
-        "부하에 따라 전압/주파수를 실시간 조절하는 기술.\n\n• 높은 부하: 전압↑ 주파수↑ → 최대 성능\n• 낮은 부하: 전압↓ 주파수↓ → 전력 절감\n• SK하이닉스 DDR5에 적용, 삼성은 High-K MG로 차별화\n• 전력 ∝ V² × f 이므로, 전압을 10% 낮추면 전력 ~19% 절감",
-    },
-    {
-      title: "DDR5 vs DDR4 핵심 차이",
-      content:
-        "• 속도: 4.8~8.4+ Gbps (DDR4: 3.2 Gbps)\n• 채널: 듀얼 32bit 서브채널 (DDR4: 싱글 64bit)\n• 전압: 1.1V (DDR4: 1.2V)\n• ECC: On-die ECC 내장\n• 뱅크: 32 뱅크, 8 뱅크 그룹 (DDR4: 16/4)",
+        company === "samsung"
+          ? "삼성은 DDR5를 고속 메모리 공정 최적화의 연장선에서 봅니다.\n\n- 미세 공정과 HKMG 연결\n- 서버/PC 메모리에서 안정성 강조"
+          : "하이닉스는 DDR5에서 DVFS를 전면에 내세워 효율을 강조합니다.\n\n- 부하에 따라 전압과 주파수를 조절\n- 서버와 PC 모두에서 전력 효율 개선",
     },
   ],
-  GDDR7: (company, lineup) => [
+  GDDR7: () => [
     {
-      title: "GDDR7의 혁신 — PAM4 신호 방식",
+      title: "왜 GDDR7은 여전히 중요할까",
       content:
-        "• 기존 NRZ(0/1 두 레벨) → PAM4(4레벨: 00/01/10/11)\n• 같은 클럭에서 2배 데이터 전송\n• 단점: 신호 마진↓, 노이즈에 취약 → 고급 신호 처리 필요\n• GDDR7의 32Gbps 달성의 핵심 기술",
+        "HBM이 모든 GPU를 대체하지는 않습니다.\n\n- HBM은 최고 대역폭이 필요할 때 유리하지만 비용이 큽니다.\n- GDDR7은 그래픽 카드와 일부 AI 추론 카드에 맞는 비용 대비 성능 지점을 제공합니다.\n- PAM3/PAM4 계열 신호 방식과 패키지 설계가 핵심입니다.",
     },
     {
-      title: "48GB 세계 최초 (하이닉스) — 어떻게 가능했나",
+      title: "칩당 용량 경쟁의 의미",
       content:
-        "• 기존 GDDR 칩당 용량 한계를 깬 기술\n• 다이 사이즈 최적화 + 미세 공정 적용\n• GPU 양쪽 4개씩, 총 8개 → 384GB (48GB x 8)\n• 삼성 36GB x 8 = 288GB 대비 +33%\n• AI 추론/학습 워크로드에서 VRAM 용량이 곧 경쟁력",
-    },
-    {
-      title: "HBM vs GDDR — 언제 무엇을 쓰는가",
-      content:
-        "• HBM: AI 학습/추론, 데이터센터 GPU (H100, B200)\n  → 대역폭 극한, but 비쌈 (칩당 ~$500)\n\n• GDDR: 게이밍, 엣지 AI, 소비자 GPU (RTX 50xx)\n  → 비용 효율적, 대역폭은 HBM보다 낮지만 충분\n\n• 트렌드: 고급 AI GPU는 HBM, 게이밍+엣지는 GDDR로 이원화",
+        "같은 보드에 붙는 칩 수가 제한된 만큼, 칩당 용량 증가는 곧 총 VRAM 증가로 이어집니다.\n\n- 보드 설계 자유도 증가\n- 대형 모델 추론/그래픽 처리에 유리\n- 메모리 공급 구조 차별화 포인트",
     },
   ],
-  LPDDR6: (company, lineup) => [
+  LPDDR6: () => [
     {
-      title: "DVFS가 왜 중요한가",
+      title: "왜 LPDDR에서는 DVFS가 핵심인가",
       content:
-        "전력 소비 공식: P ∝ C × V² × f\n\n• 전압(V)을 20% 낮추면: 전력 36% 절감\n• 주파수(f)를 50% 낮추면: 전력 50% 절감\n• DVFS = 부하에 따라 V와 f를 동시 조절\n• 스마트폰 배터리 수명에 직결되는 핵심 기술",
+        "모바일과 엣지 디바이스에서는 배터리와 발열이 곧 사용자 경험입니다.\n\n- 부하가 낮을 때 전압과 주파수를 낮춰 소비전력을 줄임\n- 필요할 때만 즉시 성능을 끌어올림\n- AI 추론과 모바일 작업이 섞일수록 중요해짐",
     },
     {
-      title: "서브채널 선택 운용",
+      title: "LPDDR6가 겨냥하는 시장",
       content:
-        "• 전체 채널을 항상 사용하는 대신, 필요한 경로만 선택\n• 나머지 채널은 전원 차단 → 추가 절전\n• 가정용 로봇, AR 글래스 등 배터리 기기에 최적",
-    },
-    {
-      title: "LPDDR6 vs LPDDR5X",
-      content:
-        "• 속도: 전세대 대비 +33%\n• 전력: DVFS 적용으로 20% 절감\n• 공정: 1c 10nm급\n• 타겟: 스마트폰, 가정용 로봇, On-device AI\n• 삼성: DVFS 미적용 / 하이닉스: DVFS 적용으로 차별화",
+        "스마트폰뿐 아니라 온디바이스 AI 기기, XR, 로봇, 자동차 인포테인먼트까지 확장됩니다.\n\n- 더 높은 성능\n- 더 낮은 전력\n- 더 다양한 사용 패턴 대응",
     },
   ],
-  NAND: (company, lineup) => [
+  NAND: () => [
     {
-      title: "3D NAND — 수직 적층의 시대",
+      title: "왜 NAND는 3D 적층으로 갔는가",
       content:
-        "• 2D NAND: 한 층에 셀 배치 → 미세화 한계\n• 3D NAND: 수백 층을 수직으로 쌓음 (200단+)\n• 적층 수↑ = 용량↑, but 공정 난이도 급증\n• HAR(고종횡비) 식각과 균일한 박막 증착이 핵심 과제",
+        "2D NAND는 면적 축소만으로는 용량 증가가 어려워졌습니다.\n\n- 셀 간 간섭 문제\n- 리소그래피 한계\n- 3D 적층이 용량 확대의 현실적 해법",
     },
     {
-      title: "PM9E1 — 삼성 차세대 SSD",
+      title: "NAND의 진짜 난제는 무엇인가",
       content:
-        "• GTC 2026에서 공개\n• AI 학습 데이터 전처리, 추론 캐싱에 최적화\n• PCIe Gen6 인터페이스 예상\n• 최신 V-NAND 기술 적용",
+        "층 수를 늘리는 것만으로 끝나지 않습니다.\n\n- 고종횡비 식각\n- 균일한 박막 증착\n- 프로그램/지우기 속도와 수명 균형\n- SSD 단에서의 컨트롤러와 시스템 최적화",
     },
   ],
 };
@@ -263,28 +236,26 @@ export function getDeepDive(key: string, company: "samsung" | "hynix", lineup: a
   return fn ? fn(company, lineup) : [];
 }
 
-/* ---- one-liner per slug ---- */
-
 const ONE_LINERS: Record<string, Record<"samsung" | "hynix", string>> = {
   HBM4: {
-    samsung: "AI GPU 옆에 붙는 초고대역폭 메모리 — 삼성, 자체 4nm 베이스다이로 세계 최초 양산 출하",
-    hynix: "AI GPU 옆에 붙는 초고대역폭 메모리 — HBM의 창시자 SK하이닉스, 부동의 점유율 1위",
+    samsung: "AI 가속기 옆에 붙는 초고대역폭 메모리로, 삼성은 파운드리·패키징까지 연결된 축에서 접근합니다.",
+    hynix: "AI 가속기 옆에 붙는 초고대역폭 메모리로, 하이닉스는 HBM 리더십과 패키징 완성도로 우위를 지켜왔습니다.",
   },
   DDR5: {
-    samsung: "서버·PC의 주력 메모리 — 삼성, High-K Metal Gate로 누설전류 혁신",
-    hynix: "서버·PC의 주력 메모리 — SK하이닉스, DVFS로 전력 효율 혁신",
+    samsung: "서버와 PC의 주력 DRAM 세대로, 고속화와 공정 최적화를 함께 읽어야 하는 메모리입니다.",
+    hynix: "서버와 PC의 주력 DRAM 세대로, 하이닉스는 DVFS와 전력 효율 관점이 특히 중요합니다.",
   },
   GDDR7: {
-    samsung: "게이밍 GPU를 위한 초고속 그래픽 메모리 — 32Gbps, 36GB/칩",
-    hynix: "게이밍 GPU를 위한 초고속 그래픽 메모리 — 48GB/칩 세계 최초, HBM+GDDR 양쪽 독점",
+    samsung: "고성능 GPU를 위한 그래픽 메모리로, HBM과는 다른 비용·용량 포지션을 가집니다.",
+    hynix: "고성능 GPU를 위한 그래픽 메모리로, 하이닉스는 칩당 용량 확대를 강점으로 내세웁니다.",
   },
   LPDDR6: {
-    samsung: "모바일·IoT를 위한 저전력 메모리 — 1c 10nm급 공정",
-    hynix: "모바일·IoT를 위한 저전력 메모리 — DVFS로 전력 20%↓, 속도 33%↑",
+    samsung: "모바일과 온디바이스 AI 기기를 위한 저전력 메모리로, 효율과 안정성이 핵심입니다.",
+    hynix: "모바일과 온디바이스 AI 기기를 위한 저전력 메모리로, DVFS가 실제 차별화 포인트로 작동합니다.",
   },
   NAND: {
-    samsung: "SSD의 핵심 저장 칩 — PM9E1 차세대 SSD, GTC 2026 공개",
-    hynix: "SSD의 핵심 저장 칩 — 3D NAND 고적층 경쟁 가속",
+    samsung: "대용량 저장의 핵심이며, 3D 적층과 SSD 생태계가 함께 읽혀야 하는 분야입니다.",
+    hynix: "대용량 저장의 핵심이며, 고적층 경쟁과 SSD 제품 전략을 함께 보는 것이 중요합니다.",
   },
 };
 

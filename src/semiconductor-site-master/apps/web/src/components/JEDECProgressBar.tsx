@@ -15,7 +15,7 @@ export default function JEDECProgressBar({
   target,
   unit,
   color,
-  label = "JEDEC 달성률",
+  label = "JEDEC 목표 대비",
 }: JEDECProgressBarProps) {
   const percentage = Math.min((achieved / target) * 100, 200);
   const displayPercent = Math.round(percentage);
@@ -23,8 +23,8 @@ export default function JEDECProgressBar({
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-[10px] text-gray-500 uppercase tracking-wider">{label}</span>
+      <div className="mb-1 flex items-center justify-between">
+        <span className="text-[10px] uppercase tracking-wider text-gray-500">{label}</span>
         <span className="text-[10px] text-gray-400">
           {achieved} / {target} {unit}
           <span className="ml-1 font-semibold" style={{ color: overTarget ? color : undefined }}>
@@ -32,10 +32,9 @@ export default function JEDECProgressBar({
           </span>
         </span>
       </div>
-      <div className="relative h-2 bg-gray-800 rounded-full overflow-hidden">
-        {/* JEDEC target marker at 100% */}
+      <div className="relative h-2 overflow-hidden rounded-full bg-gray-800">
         <div
-          className="absolute top-0 bottom-0 w-px bg-gray-500 z-10"
+          className="absolute bottom-0 top-0 z-10 w-px bg-gray-500"
           style={{ left: `${Math.min(100, (100 / Math.max(percentage, 100)) * 100)}%` }}
         />
         <motion.div

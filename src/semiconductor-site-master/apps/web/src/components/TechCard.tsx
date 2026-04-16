@@ -70,7 +70,7 @@ export default function TechCard({
           whileHover={{ y: -4, scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          className="rounded-2xl border border-gray-800 bg-gray-900/60 backdrop-blur-sm p-6 hover:border-gray-700 transition-all cursor-pointer h-full flex flex-col"
+          className="glass-panel glass-card-hover rounded-2xl p-6 cursor-pointer h-full flex flex-col"
         >
           {/* Header */}
           <div className="flex items-start justify-between mb-4">
